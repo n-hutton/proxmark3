@@ -27,6 +27,21 @@
 //  /!\ Printing Debug message is disrupting emulation,
 //  Only use with caution during debugging
 
+//#define FLAG_INTERACTIVE        0x01
+#define FLAG_4B_UID_IN_DATA_OLD     0x02
+#define FLAG_7B_UID_IN_DATA_OLD     0x04
+#define FLAG_10B_UID_IN_DATA_OLD    0x08
+#define FLAG_UID_IN_EMUL_OLD        0x10
+#define FLAG_MF_MINI_OLD            0x80
+#define FLAG_MF_1K_OLD              0x100
+#define FLAG_MF_2K_OLD              0x200
+#define FLAG_MF_4K_OLD              0x400
+#define FLAG_FORCED_ATQA            0x800
+#define FLAG_FORCED_SAK             0x1000
+#define FLAG_CVE21_0430_OLD         0x2000
+//#define FLAG_RATS_IN_DATA_OLD       0x4000
+//#define FLAG_NESTED_AUTH_ATTACK 0x8000
+
 #include "emvsim.h"
 
 #include <inttypes.h>
@@ -115,24 +130,24 @@ static bool MifareSimInit(uint16_t flags, uint8_t *datain, uint16_t atqa, uint8_
     // Length: 4,7,or 10 bytes
 
     // Get UID, SAK, ATQA from EMUL
-    if ((flags & FLAG_UID_IN_EMUL) == FLAG_UID_IN_EMUL) {
+    if ((flags & FLAG_UID_IN_EMUL_OLD) == FLAG_UID_IN_EMUL_OLD) {
         uint8_t block0[16];
         emlGet(block0, 0, 16);
 
         // If uid size defined, copy only uid from EMUL to use, backward compatibility for 'hf_colin.c', 'hf_mattyrun.c'
-        if ((flags & (FLAG_4B_UID_IN_DATA | FLAG_7B_UID_IN_DATA | FLAG_10B_UID_IN_DATA)) != 0) {
+        if ((flags & (FLAG_4B_UID_IN_DATA_OLD | FLAG_7B_UID_IN_DATA_OLD | FLAG_10B_UID_IN_DATA_OLD)) != 0) {
             memcpy(datain, block0, 10);  // load 10bytes from EMUL to the datain pointer. to be used below.
         } else {
             // Check for 4 bytes uid: bcc corrected and single size uid bits in ATQA
             if ((block0[0] ^ block0[1] ^ block0[2] ^ block0[3]) == block0[4] && (block0[6] & 0xc0) == 0) {
-                flags |= FLAG_4B_UID_IN_DATA;
+                flags |= FLAG_4B_UID_IN_DATA_OLD;
                 memcpy(datain, block0, 4);
                 rSAK[0] = block0[5];
                 memcpy(rATQA, &block0[6], sizeof(rATQA));
             }
                 // Check for 7 bytes UID: double size uid bits in ATQA
             else if ((block0[8] & 0xc0) == 0x40) {
-                flags |= FLAG_7B_UID_IN_DATA;
+                flags |= FLAG_7B_UID_IN_DATA_OLD;
                 memcpy(datain, block0, 7);
                 rSAK[0] = block0[7];
                 memcpy(rATQA, &block0[8], sizeof(rATQA));
@@ -146,32 +161,32 @@ static bool MifareSimInit(uint16_t flags, uint8_t *datain, uint16_t atqa, uint8_
 
     // Tune tag type, if defined directly
     // Otherwise use defined by default or extracted from EMUL
-    if ((flags & FLAG_MF_MINI) == FLAG_MF_MINI) {
+    if ((flags & FLAG_MF_MINI_OLD) == FLAG_MF_MINI_OLD) {
         memcpy(rATQA, rATQA_Mini, sizeof(rATQA));
         rSAK[0] = rSAK_Mini;
         if (999 > DBG_NONE) Dbprintf("Enforcing Mifare Mini ATQA/SAK");
-    } else if ((flags & FLAG_MF_1K) == FLAG_MF_1K) {
+    } else if ((flags & FLAG_MF_1K_OLD) == FLAG_MF_1K_OLD) {
         memcpy(rATQA, rATQA_1k, sizeof(rATQA));
         rSAK[0] = rSAK_1k;
         if (999 > DBG_NONE) Dbprintf("Enforcing Mifare 1K ATQA/SAK (!!!!)");
-    } else if ((flags & FLAG_MF_2K) == FLAG_MF_2K) {
+    } else if ((flags & FLAG_MF_2K_OLD) == FLAG_MF_2K_OLD) {
         memcpy(rATQA, rATQA_2k, sizeof(rATQA));
         rSAK[0] = rSAK_2k;
         *rats = rRATS;
         *rats_len = sizeof(rRATS);
         if (999 > DBG_NONE) Dbprintf("Enforcing Mifare 2K ATQA/SAK with RATS support");
-    } else if ((flags & FLAG_MF_4K) == FLAG_MF_4K) {
+    } else if ((flags & FLAG_MF_4K_OLD) == FLAG_MF_4K_OLD) {
         memcpy(rATQA, rATQA_4k, sizeof(rATQA));
         rSAK[0] = rSAK_4k;
         if (999 > DBG_NONE) Dbprintf("Enforcing Mifare 4K ATQA/SAK");
     }
 
     // Prepare UID arrays
-    if ((flags & FLAG_4B_UID_IN_DATA) == FLAG_4B_UID_IN_DATA) { // get UID from datain
+    if ((flags & FLAG_4B_UID_IN_DATA_OLD) == FLAG_4B_UID_IN_DATA_OLD) { // get UID from datain
         memcpy(rUIDBCC1, datain, 4);
         *uid_len = 4;
         if (999 >= DBG_EXTENDED)
-            Dbprintf("MifareSimInit - FLAG_4B_UID_IN_DATA => Get UID from datain: %02X - Flag: %02X - UIDBCC1: %02X", FLAG_4B_UID_IN_DATA, flags, rUIDBCC1);
+            Dbprintf("MifareSimInit - FLAG_4B_UID_IN_DATA_OLD => Get UID from datain: %02X - Flag: %02X - UIDBCC1: %02X", FLAG_4B_UID_IN_DATA_OLD, flags, rUIDBCC1);
 
         // save CUID
         *cuid = bytes_to_num(rUIDBCC1, 4);
@@ -184,12 +199,12 @@ static bool MifareSimInit(uint16_t flags, uint8_t *datain, uint16_t atqa, uint8_
         // Correct uid size bits in ATQA
         rATQA[0] = (rATQA[0] & 0x3f) | 0x00; // single size uid
 
-    } else if ((flags & FLAG_7B_UID_IN_DATA) == FLAG_7B_UID_IN_DATA) {
+    } else if ((flags & FLAG_7B_UID_IN_DATA_OLD) == FLAG_7B_UID_IN_DATA_OLD) {
         memcpy(&rUIDBCC1[1], datain, 3);
         memcpy(rUIDBCC2, datain + 3, 4);
         *uid_len = 7;
         if (999 >= DBG_EXTENDED)
-            Dbprintf("MifareSimInit - FLAG_7B_UID_IN_DATA => Get UID from datain: %02X - Flag: %02X - UIDBCC1: %02X", FLAG_7B_UID_IN_DATA, flags, rUIDBCC1);
+            Dbprintf("MifareSimInit - FLAG_7B_UID_IN_DATA_OLD => Get UID from datain: %02X - Flag: %02X - UIDBCC1: %02X", FLAG_7B_UID_IN_DATA_OLD, flags, rUIDBCC1);
 
         // save CUID
         *cuid = bytes_to_num(rUIDBCC2, 4);
@@ -206,13 +221,13 @@ static bool MifareSimInit(uint16_t flags, uint8_t *datain, uint16_t atqa, uint8_
         // Correct uid size bits in ATQA
         rATQA[0] = (rATQA[0] & 0x3f) | 0x40; // double size uid
 
-    } else if ((flags & FLAG_10B_UID_IN_DATA) == FLAG_10B_UID_IN_DATA) {
+    } else if ((flags & FLAG_10B_UID_IN_DATA_OLD) == FLAG_10B_UID_IN_DATA_OLD) {
         memcpy(&rUIDBCC1[1], datain,   3);
         memcpy(&rUIDBCC2[1], datain + 3, 3);
         memcpy(rUIDBCC3,    datain + 6, 4);
         *uid_len = 10;
         if (999 >= DBG_EXTENDED)
-            Dbprintf("MifareSimInit - FLAG_10B_UID_IN_DATA => Get UID from datain: %02X - Flag: %02X - UIDBCC1: %02X", FLAG_10B_UID_IN_DATA, flags, rUIDBCC1);
+            Dbprintf("MifareSimInit - FLAG_10B_UID_IN_DATA_OLD => Get UID from datain: %02X - Flag: %02X - UIDBCC1: %02X", FLAG_10B_UID_IN_DATA_OLD, flags, rUIDBCC1);
 
         // save CUID
         *cuid = bytes_to_num(rUIDBCC3, 4);
@@ -238,6 +253,7 @@ static bool MifareSimInit(uint16_t flags, uint8_t *datain, uint16_t atqa, uint8_
         Dbprintf("ERROR: " _RED_("UID size not defined"));
         return false;
     }
+
     if (flags & FLAG_FORCED_ATQA) {
         rATQA[0] = atqa >> 8;
         rATQA[1] = atqa & 0xff;
@@ -485,7 +501,7 @@ void EMVsim(uint16_t flags, uint8_t exitAfterNReads, uint8_t *datain, uint16_t a
 
         if (res == 2) { //Field is off!
             //FpgaDisableTracing();
-            if ((flags & FLAG_CVE21_0430) == FLAG_CVE21_0430) {
+            if ((flags & FLAG_CVE21_0430_OLD) == FLAG_CVE21_0430_OLD) {
                 p_em[1] = 0x21;
                 //cve_flipper = 0;
             }
