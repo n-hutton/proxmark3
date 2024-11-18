@@ -3069,7 +3069,7 @@ static int CmdNumCon(const char *Cmd) {
                   "Function takes a decimal or hexdecimal number and print it in decimal/hex/binary\n"
                   "Will print message if number is a prime number\n",
                   "data num --dec 2023\n"
-                  "data num --hex 0x1000\n"
+                  "data num --hex 2A\n"
                  );
 
     void *argtable[] = {
@@ -3156,11 +3156,22 @@ static int CmdNumCon(const char *Cmd) {
 
     char s[600] = {0};
     size_t slen = 0;
+    const char pad[] = "00000000000000000000000000000000000000000000000000000000000000000000000000000000";
 
     for (uint8_t i = 0; i < ARRAYLEN(radix); i++) {
         MBEDTLS_MPI_CHK(mbedtls_mpi_write_string(&N, radix[i].radix, s, sizeof(s), &slen));
         if (slen) {
-            PrintAndLogEx(SUCCESS, "%s%s", radix[i].desc, s);
+
+            // only pad bin string
+            int pn = 0;
+            if (i == 2) {
+                if (blen && slen < blen) {
+                    pn = blen - slen + 1;
+                } else if (hlen && (slen < (hlen * 4))) {
+                    pn = (hlen * 4) - slen + 1;
+                }
+            }
+            PrintAndLogEx(SUCCESS, "%s%.*s%s", radix[i].desc, pn, pad, s);
         }
     }
 
@@ -3182,10 +3193,22 @@ static int CmdNumCon(const char *Cmd) {
         for (uint8_t i = 0; i < ARRAYLEN(radix); i++) {
             MBEDTLS_MPI_CHK(mbedtls_mpi_write_string(&N, radix[i].radix, s, sizeof(s), &slen));
 
-            str_reverse(s, strlen(s));
-
             if (slen) {
-                PrintAndLogEx(SUCCESS, "%s%s", radix[i].desc, s);
+
+                // only pad bin string
+                char scpy[600] = {0x30};
+                memset(scpy, 0x30, sizeof(scpy));
+                int pn = 0;
+                if (i == 2) {
+                    if (blen && slen < blen) {
+                        pn = blen - slen + 1;
+                    } else if (hlen && (slen < (hlen * 4))) {
+                        pn = (hlen * 4) - slen + 1;
+                    }
+                }
+                memcpy(scpy + pn, s, slen);
+                str_reverse(scpy, strlen(scpy));
+                PrintAndLogEx(SUCCESS, "%s%s", radix[i].desc, scpy);
             }
         }
 
@@ -3213,19 +3236,34 @@ static int CmdNumCon(const char *Cmd) {
             }
 
             switch (i) {
-                case 0:
+                case 0: {
 //                    MBEDTLS_MPI_CHK(mbedtls_mpi_inv_mod(&N, &N, &base));
                     break;
-                case 1:
+                }
+                case 1: {
                     str_inverse_hex(s, strlen(s));
                     PrintAndLogEx(SUCCESS, "%s%s", radix[i].desc, s);
                     break;
-                case 2:
-                    str_inverse_bin(s, strlen(s));
-                    PrintAndLogEx(SUCCESS, "%s%s", radix[i].desc, s);
+                }
+                case 2: {
+
+                    char scpy[600] = {0x30};
+                    memset(scpy, 0x30, sizeof(scpy));
+                    int pn = 0;
+                    if (blen && slen < blen) {
+                        pn = blen - slen + 1;
+                    } else if (hlen && (slen < (hlen * 4))) {
+                        pn = (hlen * 4) - slen + 1;
+                    }
+
+                    memcpy(scpy + pn, s, slen);
+                    str_inverse_bin(scpy, strlen(scpy));
+                    PrintAndLogEx(SUCCESS, "%s%s", radix[i].desc, scpy);
                     break;
-                default:
+                }
+                default: {
                     break;
+                }
             }
         }
         // ascii
@@ -3346,9 +3384,9 @@ static int envelope_square(const int *in, int *out, size_t len) {
 
 static int CmdEnvelope(const char *Cmd) {
     CLIParserContext *ctx;
-    CLIParserInit(&ctx, "data envelop",
-                  "Create an square envelop of the samples",
-                  "data envelop"
+    CLIParserInit(&ctx, "data envelope",
+                  "Create an square envelope of the samples",
+                  "data envelope"
                  );
     void *argtable[] = {
         arg_param_begin,

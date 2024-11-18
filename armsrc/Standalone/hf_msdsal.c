@@ -209,7 +209,8 @@ void RunMod(void) {
     bool chktoken = false;
 
     // UID 4 bytes(could be 7 bytes if needed it)
-    uint8_t flags = FLAG_4B_UID_IN_DATA;
+    uint8_t flags = 0;
+    FLAG_SET_UID_IN_DATA(flags, 4);
     // in case there is a read command received we shouldn't break
     uint8_t data[PM3_CMD_DATA_SIZE] = {0x00};
 
@@ -378,7 +379,7 @@ void RunMod(void) {
             BigBuf_free_keep_EM();
 
             // tag type: 11 = ISO/IEC 14443-4 - javacard (JCOP)
-            if (SimulateIso14443aInit(11, flags, data, &responses, &cuid, NULL, NULL, NULL) == false) {
+            if (SimulateIso14443aInit(11, flags, data, NULL, &responses, &cuid, NULL, NULL, NULL) == false) {
                 BigBuf_free_keep_EM();
                 reply_ng(CMD_HF_MIFARE_SIMULATE, PM3_EINIT, NULL, 0);
                 DbpString(_RED_("Error initializing the emulation process!"));

@@ -29,7 +29,6 @@
 #include "dbprint.h"
 #include "util.h"
 #include "commonutil.h"
-
 #include "crc16.h"
 #include "string.h"
 #include "printf.h"
@@ -2149,7 +2148,7 @@ void T55xx_ChkPwds(uint8_t flags, bool ledcontrol) {
     BigBuf_Clear_EM();
     uint16_t isok = 0;
     uint8_t counter[2] = {0x00, 0x00};
-    isok = Flash_ReadData(DEFAULT_T55XX_KEYS_OFFSET, counter, sizeof(counter));
+    isok = Flash_ReadData(DEFAULT_T55XX_KEYS_OFFSET_P(spi_flash_p64k), counter, sizeof(counter));
     if (isok != sizeof(counter))
         goto OUT;
 
@@ -2165,7 +2164,7 @@ void T55xx_ChkPwds(uint8_t flags, bool ledcontrol) {
     // adjust available pwd_count
     pwd_count = pwd_size_available / 4;
 
-    isok = Flash_ReadData(DEFAULT_T55XX_KEYS_OFFSET + 2, pwds, pwd_size_available);
+    isok = Flash_ReadData(DEFAULT_T55XX_KEYS_OFFSET_P(spi_flash_p64k) + 2, pwds, pwd_size_available);
     if (isok != pwd_size_available)
         goto OUT;
 
@@ -2593,13 +2592,13 @@ static void SendForward(uint8_t fwd_bit_count, bool fast) {
 // 32FC * 8us == 256us / 21.3 ==  12.018 steps. ok
 // 16FC * 8us == 128us / 21.3 ==  6.009 steps. ok
 #ifndef EM_START_GAP
-#define EM_START_GAP 55*8
+#define EM_START_GAP (55 * 8)
 #endif
 
     fwd_write_ptr = forwardLink_data;
     fwd_bit_sz = fwd_bit_count;
 
-    if (! fast) {
+    if (fast == false) {
         // Set up FPGA, 125kHz or 95 divisor
         LFSetupFPGAForADC(LF_DIVISOR_125, true);
     }
@@ -2639,16 +2638,21 @@ void EM4xBruteforce(uint32_t start_pwd, uint32_t n, bool ledcontrol) {
     FpgaWriteConfWord(FPGA_MAJOR_MODE_OFF);
     WaitMS(20);
     if (ledcontrol) LED_A_ON();
+
     LFSetupFPGAForADC(LF_DIVISOR_125, true);
+
     uint32_t candidates_found = 0;
     for (uint32_t pwd = start_pwd; pwd < 0xFFFFFFFF; pwd++) {
+
         if (((pwd - start_pwd) & 0x3F) == 0x00) {
+
             WDT_HIT();
             if (BUTTON_PRESS() || data_available()) {
                 Dbprintf("EM4x05 Bruteforce Interrupted");
                 break;
             }
         }
+
         // Report progress every 256 attempts
         if (((pwd - start_pwd) & 0xFF) == 0x00) {
             Dbprintf("Trying: %06Xxx", pwd >> 8);
@@ -2662,7 +2666,9 @@ void EM4xBruteforce(uint32_t start_pwd, uint32_t n, bool ledcontrol) {
 
         WaitUS(400);
         DoPartialAcquisition(0, false, 350, 1000, ledcontrol);
+
         uint8_t *mem = BigBuf_get_addr();
+
         if (mem[334] < 128) {
             candidates_found++;
             Dbprintf("Password candidate: " _GREEN_("%08X"), pwd);
@@ -2671,6 +2677,7 @@ void EM4xBruteforce(uint32_t start_pwd, uint32_t n, bool ledcontrol) {
                 break;
             }
         }
+
         // Beware: if smaller, tag might not have time to be back in listening state yet
         WaitMS(1);
     }
@@ -2719,7 +2726,9 @@ void EM4xReadWord(uint8_t addr, uint32_t pwd, uint8_t usepwd, bool ledcontrol) {
     * 0000 1010 ok
     * 0000 0001 fail
     **/
-    if (usepwd) EM4xLoginEx(pwd);
+    if (usepwd) {
+        EM4xLoginEx(pwd);
+    }
 
     forward_ptr = forwardLink_data;
     uint8_t len = Prepare_Cmd(FWD_CMD_READ);
@@ -2754,7 +2763,9 @@ void EM4xWriteWord(uint8_t addr, uint32_t data, uint32_t pwd, uint8_t usepwd, bo
     * 0000 1010 ok.
     * 0000 0001 fail
     **/
-    if (usepwd) EM4xLoginEx(pwd);
+    if (usepwd) {
+        EM4xLoginEx(pwd);
+    }
 
     forward_ptr = forwardLink_data;
     uint8_t len = Prepare_Cmd(FWD_CMD_WRITE);
@@ -2797,7 +2808,9 @@ void EM4xProtectWord(uint32_t data, uint32_t pwd, uint8_t usepwd, bool ledcontro
     * 0000 1010 ok.
     * 0000 0001 fail
     **/
-    if (usepwd) EM4xLoginEx(pwd);
+    if (usepwd) {
+        EM4xLoginEx(pwd);
+    }
 
     forward_ptr = forwardLink_data;
     uint8_t len = Prepare_Cmd(FWD_CMD_PROTECT);

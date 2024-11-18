@@ -163,40 +163,48 @@
         "AID": "53494F",
         "Vendor": "HID",
         "Country": "US",
-        "Name": "Access Control",
-        "Description": "HID Factory",
+        "Name": "SIO DESFire EV1 - HID Factory",
+        "Description": "Access Control",
         "Type": "pacs"
     },
     {
         "AID": "6F706C",
         "Vendor": "Openpath",
         "Country": "US",
-        "Name": "Access control",
-        "Description": "Openpath PACS Application",
+        "Name": "Openpath PACS Application",
+        "Description": "Access Control",
         "Type": "pacs"
     },
     {
         "AID": "706000",
         "Vendor": "RBH Access Technologies, Inc.",
         "Country": "CA",
-        "Name": "Access Control",
-        "Description": "BlueLINE EV1 PACS Credential",
+        "Name": "BlueLINE EV1 PACS Credential",
+        "Description": "Access Control",
         "Type": "pacs"
     },
     {
         "AID": "D3494F",
         "Vendor": "HID",
         "Country": "US",
-        "Name": "SIO DESFire EV1",
-        "Description": "Field Encoder",
+        "Name": "SIO DESFire EV1 - Field Encoder",
+        "Description": "Access Control",
         "Type": "pacs"
     },
     {
         "AID": "D9494F",
         "Vendor": "HID",
         "Country": "US",
-        "Name": "Access control",
-        "Description": "Field Encoder",
+        "Name": "SIO DESFire EV1 - Field Encoder",
+        "Description": "Access Control",
+        "Type": "pacs"
+    },
+    {
+        "AID": "F47300",
+        "Vendor": "Inner Range",
+        "Country": "AU",
+        "Name": "Sifer-P, Sifer-U Credential",
+        "Description": "Inner Range access control",
         "Type": "pacs"
     },
     {
@@ -328,11 +336,27 @@
         "Type": "pacs"
     },
     {
+        "AID": "F484E3",
+        "Vendor": "HID",
+        "Country": "US",
+        "Name": "SIO DESFire EV3 - Field Encoder",
+        "Description": "Access Control",
+        "Type": "pacs"
+    },
+    {
+        "AID": "F484E4",
+        "Vendor": "HID",
+        "Country": "US",
+        "Name": "SIO DESFire EV3 - HID Factory",
+        "Description": "Access Control",
+        "Type": "pacs"
+    },
+    {
         "AID": "F48EF1",
         "Vendor": "Salto Systems",
         "Country": "ES",
         "Name": "Salto Systems",
-        "Description": "",
+        "Description": "Access Control",
         "Type": "pacs"
     },
     {
@@ -400,10 +424,42 @@
         "Type": "alarm system"
     },
     {
+        "AID": "010010",
+        "Vendor": "ASSA ABLOY",
+        "Country": "GB",
+        "Name": "Campus Card",
+        "Description": "Campus Card",
+        "Type": "student"
+    },
+    {
+        "AID": "030020",
+        "Vendor": "Algonquin College of Applied Arts and Technology",
+        "Country": "CA",
+        "Name": "Campus Card",
+        "Description": "Campus Card",
+        "Type": "student"
+    },
+    {
+        "AID": "050030",
+        "Vendor": "Algonquin College of Applied Arts and Technology",
+        "Country": "CA",
+        "Name": "Campus Card",
+        "Description": "Campus Card",
+        "Type": "student"
+    },
+    {
         "AID": "05845F",
         "Vendor": "InterCard GmbH Kartensysteme",
         "Country": "DE",
         "Name": "InterCard",
+        "Description": "Campus Card",
+        "Type": "student"
+    },
+    {
+        "AID": "070090",
+        "Vendor": "Algonquin College of Applied Arts and Technology",
+        "Country": "CA",
+        "Name": "Campus Card",
         "Description": "Campus Card",
         "Type": "student"
     },
@@ -424,11 +480,27 @@
         "Type": "student"
     },
     {
+        "AID": "3086F5",
+        "Vendor": "CNOUS/CROUS via MONECARTE",
+        "Country": "FR",
+        "Name": "European Student Card (ESC)",
+        "Description": "Multiservice Student Card",
+        "Type": "student"
+    },
+    {
         "AID": "35845F",
         "Vendor": "InterCard GmbH Kartensysteme",
         "Country": "DE",
         "Name": "InterCard",
         "Description": "Campus Card",
+        "Type": "student"
+    },
+    {
+        "AID": "4085F5",
+        "Vendor": "CNOUS/CROUS via MONECARTE",
+        "Country": "FR",
+        "Name": "European Student Card (ESC)",
+        "Description": "Multiservice Student Card",
         "Type": "student"
     },
     {
@@ -544,11 +616,35 @@
         "Type": "student"
     },
     {
+        "AID": "7086F5",
+        "Vendor": "CNOUS/CROUS via MONECARTE",
+        "Country": "FR",
+        "Name": "European Student Card (ESC)",
+        "Description": "Multiservice Student Card",
+        "Type": "student"
+    },
+    {
         "AID": "75845F",
         "Vendor": "InterCard GmbH Kartensysteme",
         "Country": "DE",
         "Name": "InterCard",
         "Description": "Campus Card",
+        "Type": "student"
+    },
+    {
+        "AID": "9180F3",
+        "Vendor": "CNOUS/CROUS via MONECARTE",
+        "Country": "FR",
+        "Name": "European Student Card (ESC)",
+        "Description": "Multiservice Student Card",
+        "Type": "student"
+    },
+    {
+        "AID": "A086F5",
+        "Vendor": "CNOUS/CROUS via MONECARTE",
+        "Country": "FR",
+        "Name": "European Student Card (ESC)",
+        "Description": "Multiservice Student Card",
         "Type": "student"
     },
     {
@@ -581,6 +677,38 @@
         "Country": "US",
         "Name": "Transact Campus ID",
         "Description": "Campus Card",
+        "Type": "student"
+    },
+    {
+        "AID": "CA1827",
+        "Vendor": "Transact Campus Inc.",
+        "Country": "US",
+        "Name": "Transact Campus ID [Custom AID]",
+        "Description": "Campus Card",
+        "Type": "student"
+    },
+    {
+        "AID": "EEE010",
+        "Vendor": "ASSA ABLOY",
+        "Country": "GB",
+        "Name": "Campus Card",
+        "Description": "Campus Card",
+        "Type": "student"
+    },
+    {
+        "AID": "F33480",
+        "Vendor": "Besucherausweis",
+        "Country": "DE",
+        "Name": "Visitor's Pass",
+        "Description": "Besucherausweis",
+        "Type": "student"
+    },
+    {
+        "AID": "F482D0",
+        "Vendor": "Besucherausweis",
+        "Country": "DE",
+        "Name": "Visitor's Pass",
+        "Description": "Besucherausweis",
         "Type": "student"
     },
     {
@@ -800,6 +928,14 @@
         "Type": "transport"
     },
     {
+        "AID": "087522",
+        "Vendor": "Umo Mobility via Cubic Transportation Systems",
+        "Country": "US",
+        "Name": "Umo Mobility Card",
+        "Description": "Umo Mobility Card",
+        "Type": "transport"
+    },
+    {
         "AID": "2211AF",
         "Vendor": "National Transport Authority",
         "Country": "IE",
@@ -856,6 +992,14 @@
         "Type": "transport"
     },
     {
+        "AID": "677F8E",
+        "Vendor": "Umo Mobility via Cubic Transportation Systems",
+        "Country": "US",
+        "Name": "Umo Mobility Card",
+        "Description": "Umo Mobility Card",
+        "Type": "transport"
+    },
+    {
         "AID": "784000",
         "Vendor": "Roads & Transport Authority (Government of Dubai)",
         "Country": "AE",
@@ -864,11 +1008,35 @@
         "Type": "transport"
     },
     {
+        "AID": "992CB5",
+        "Vendor": "Umo Mobility via Cubic Transportation Systems",
+        "Country": "US",
+        "Name": "Umo Mobility Card",
+        "Description": "Umo Mobility Card",
+        "Type": "transport"
+    },
+    {
         "AID": "A00216",
         "Vendor": "ITSO Ltd",
         "Country": "UK",
         "Name": "EMR Smartcard (EMA) / GWR touch (BRS)",
         "Description": "ITSO Public Transport Application // Provision of Citizen Services #0",
+        "Type": "transport"
+    },
+    {
+        "AID": "A4237D",
+        "Vendor": "Umo Mobility via Cubic Transportation Systems",
+        "Country": "US",
+        "Name": "Umo Mobility Card",
+        "Description": "Umo Mobility Card",
+        "Type": "transport"
+    },
+    {
+        "AID": "C65B80",
+        "Vendor": "Umo Mobility via Cubic Transportation Systems",
+        "Country": "US",
+        "Name": "Umo Mobility Card",
+        "Description": "Umo Mobility Card",
         "Type": "transport"
     },
     {
@@ -923,8 +1091,8 @@
         "AID": "F210E0",
         "Vendor": "TriMet",
         "Country": "US",
-        "Name": "Hop Fastpass (PDX)",
-        "Description": "PDX Hop Card",
+        "Name": "hop fastpass (PDX)",
+        "Description": "PDX hop fastpass Card",
         "Type": "transport"
     },
     {
@@ -1023,7 +1191,7 @@
         "Description": "UK National Smartcard Project // Provision of Citizen Services #3",
         "Type": "transport"
     },
-        {
+    {
         "AID": "F40113",
         "Vendor": "ITSO Ltd",
         "Country": "UK",

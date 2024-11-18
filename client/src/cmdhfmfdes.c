@@ -404,7 +404,7 @@ static int mfdes_get_info(mfdes_info_res_t *info) {
     PacketResponseNG resp;
     SendCommandNG(CMD_HF_DESFIRE_INFO, NULL, 0);
     if (WaitForResponseTimeout(CMD_HF_DESFIRE_INFO, &resp, 1500) == false) {
-        PrintAndLogEx(WARNING, "Command execute timeout");
+        PrintAndLogEx(WARNING, "command execution time out");
         DropField();
         return PM3_ETIMEOUT;
     }
@@ -1465,9 +1465,11 @@ static int CmdHF14aDesChk(const char *Cmd) {
         DropField();
         // MIFARE DESFire info
         SendCommandMIX(CMD_HF_ISO14443A_READER, ISO14A_CONNECT, 0, 0, NULL, 0);
-
         PacketResponseNG resp;
-        WaitForResponse(CMD_ACK, &resp);
+        if (WaitForResponseTimeout(CMD_ACK, &resp, 2500) == false) {
+            PrintAndLogEx(WARNING, "timeout while waiting for reply.");
+            return PM3_ETIMEOUT;
+        }
 
         iso14a_card_select_t card;
         memcpy(&card, (iso14a_card_select_t *)resp.data.asBytes, sizeof(iso14a_card_select_t));
@@ -2003,7 +2005,7 @@ static int CmdHF14ADesSelectApp(const char *Cmd) {
     }
 
     uint8_t dfname[32] = {0};
-    int dfnamelen = 16;
+    int dfnamelen = 16;  // since max length is 16 chars we don't have to test for 32-1 null termination
     CLIGetStrWithReturn(ctx, 12, dfname, &dfnamelen);
 
     bool selectmf = arg_get_lit(ctx, 13);
@@ -2173,7 +2175,7 @@ static int CmdHF14ADesBruteApps(const char *Cmd) {
     }
 
     PrintAndLogEx(NORMAL, "");
-    PrintAndLogEx(SUCCESS, _GREEN_("Done"));
+    PrintAndLogEx(SUCCESS, _GREEN_("Done!"));
     DropField();
     return PM3_SUCCESS;
 }
@@ -2612,8 +2614,8 @@ static int CmdHF14ADesCreateApp(const char *Cmd) {
         return PM3_EINVARG;
     }
 
-    uint8_t dfname[250] = {0};
-    int dfnamelen = 16;
+    uint8_t dfname[32] = {0};
+    int dfnamelen = 16;  // since max length is 16 chars we don't have to test for 32-1 null termination
     CLIGetStrWithReturn(ctx, 14, dfname, &dfnamelen);
 
     if (dfnamelen == 0) { // no text DF Name supplied
@@ -2923,7 +2925,7 @@ static int CmdHF14ADesFormatPICC(const char *Cmd) {
         return PM3_ESOFT;
     }
 
-    PrintAndLogEx(SUCCESS, "Desfire format: " _GREEN_("done"));
+    PrintAndLogEx(SUCCESS, "Desfire format: " _GREEN_("done!"));
 
     DropField();
     return PM3_SUCCESS;

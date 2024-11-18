@@ -110,7 +110,8 @@ void RunMod(void) {
 #define DYNAMIC_RESPONSE_BUFFER_SIZE 64
 #define DYNAMIC_MODULATION_BUFFER_SIZE 512
 
-    uint8_t flags = FLAG_7B_UID_IN_DATA; // ST25TA have 7B UID
+    uint8_t flags = 0;
+    FLAG_SET_UID_IN_DATA(flags, 7); // ST25TA have 7B UID
     uint8_t data[PM3_CMD_DATA_SIZE] = {0x00}; // in case there is a read command received we shouldn't break
 
     // to initialize the emulation
@@ -192,7 +193,7 @@ void RunMod(void) {
 
             memcpy(data, stuid, sizeof(stuid));
 
-            if (SimulateIso14443aInit(tagType, flags, data, &responses, &cuid, counters, tearings, &pages) == false) {
+            if (SimulateIso14443aInit(tagType, flags, data, NULL, &responses, &cuid, counters, tearings, &pages) == false) {
                 BigBuf_free_keep_EM();
                 reply_ng(CMD_HF_MIFARE_SIMULATE, PM3_EINIT, NULL, 0);
                 DbpString(_YELLOW_("!!") "Error initializing the simulation process!");
@@ -370,7 +371,7 @@ void RunMod(void) {
 
             memcpy(data, stuid, sizeof(stuid));
 
-            if (SimulateIso14443aInit(tagType, flags, data, &responses, &cuid, counters, tearings, &pages) == false) {
+            if (SimulateIso14443aInit(tagType, flags, data, NULL, &responses, &cuid, counters, tearings, &pages) == false) {
                 BigBuf_free_keep_EM();
                 reply_ng(CMD_HF_MIFARE_SIMULATE, PM3_EINIT, NULL, 0);
                 DbpString(_YELLOW_("!!") "Error initializing the simulation process!");

@@ -74,7 +74,7 @@ Check column "offline" for their availability.
 |command                  |offline |description
 |-------                  |------- |-----------
 |`analyse help           `|Y       |`This help`
-|`analyse lcr            `|Y       |`Generate final byte for XOR LRC`
+|`analyse lrc            `|Y       |`Generate final byte for XOR LRC`
 |`analyse crc            `|Y       |`Stub method for CRC evaluations`
 |`analyse chksum         `|Y       |`Checksum with adding, masking and one's complement`
 |`analyse dates          `|Y       |`Look for datestamps in a given array of bytes`
@@ -192,6 +192,7 @@ Check column "offline" for their availability.
 |`hf 14a cuids           `|N       |`Collect n>0 ISO14443-a UIDs in one go`
 |`hf 14a info            `|N       |`Tag information`
 |`hf 14a sim             `|N       |`Simulate ISO 14443-a tag`
+|`hf 14a simaid          `|N       |`Simulate ISO 14443-a AID Selection`
 |`hf 14a sniff           `|N       |`sniff ISO 14443-a traffic`
 |`hf 14a raw             `|N       |`Send raw hex data to tag`
 |`hf 14a reader          `|N       |`Act like an ISO14443-a reader`
@@ -226,6 +227,7 @@ Check column "offline" for their availability.
 |`hf 14b valid           `|Y       |`SRIX4 checksum test`
 |`hf 14b calypso         `|N       |`Read contents of a Calypso card`
 |`hf 14b mobib           `|N       |`Read contents of a Mobib card`
+|`hf 14b setuid          `|N       |`Set UID for magic card`
 
 
 ### hf 15
@@ -380,6 +382,7 @@ Check column "offline" for their availability.
 |`hf gallagher delete    `|N       |`Delete Gallagher credentials from a DESFire card`
 |`hf gallagher diversifykey`|Y       |`Diversify Gallagher key`
 |`hf gallagher decode    `|Y       |`Decode Gallagher credential block`
+|`hf gallagher encode    `|Y       |`Encode Gallagher credential block`
 
 
 ### hf iclass
@@ -402,14 +405,15 @@ Check column "offline" for their availability.
 |`hf iclass chk          `|N       |`Check keys`
 |`hf iclass loclass      `|Y       |`Use loclass to perform bruteforce reader attack`
 |`hf iclass lookup       `|Y       |`Uses authentication trace to check for key in dictionary file`
-|`hf iclass legrec       `|N       |`Attempts to recover the standard key of a legacy card`
-|`hf iclass legbrute     `|Y       |`Bruteforces 40 bits of a partial raw key`
+|`hf iclass legrec       `|N       |`Recovers 24 bits of the diversified key of a legacy card provided a valid nr-mac combination`
+|`hf iclass legbrute     `|Y       |`Bruteforces 40 bits of a partial diversified key, provided 24 bits of the key and two valid nr-macs`
+|`hf iclass unhash       `|Y       |`Reverses a diversified key to retrieve hash0 pre-images after DES encryption`
 |`hf iclass sim          `|N       |`Simulate iCLASS tag`
 |`hf iclass eload        `|N       |`Upload file into emulator memory`
 |`hf iclass esave        `|N       |`Save emulator memory to file`
 |`hf iclass esetblk      `|N       |`Set emulator memory block data`
 |`hf iclass eview        `|N       |`View emulator memory`
-|`hf iclass configcard   `|N       |`Reader configuration card`
+|`hf iclass configcard   `|N       |`Reader configuration card generator`
 |`hf iclass calcnewkey   `|Y       |`Calc diversified keys (blocks 3 & 4) to write new keys`
 |`hf iclass encode       `|Y       |`Encode binary wiegand to block 7`
 |`hf iclass encrypt      `|Y       |`Encrypt given block data`
@@ -1075,8 +1079,10 @@ Check column "offline" for their availability.
 |-------                  |------- |-----------
 |`lf hitag hts help      `|Y       |`This help`
 |`lf hitag hts list      `|Y       |`List Hitag S trace history`
-|`lf hitag hts read      `|N       |`Read Hitag S memory`
-|`lf hitag hts write     `|N       |`Write Hitag S page`
+|`lf hitag hts reader    `|N       |`Act like a Hitag S reader`
+|`lf hitag hts rdbl      `|N       |`Read Hitag S page`
+|`lf hitag hts wrbl      `|N       |`Write Hitag S page`
+|`lf hitag hts sim       `|N       |`Simulate Hitag S transponder`
 
 
 ### lf idteck

@@ -520,11 +520,11 @@ void RunMod(void) {
             int filled;
             partialEmulation = false;
             DbpString("[=] Filling emulator memory using key A");
-            filled = MifareECardLoad(sectorsCnt, MF_KEY_A);
+            filled = MifareECardLoad(sectorsCnt, MF_KEY_A, NULL);
             if (filled != PM3_SUCCESS) {
                 DbpString("[" _YELLOW_("-") "] " _YELLOW_("Only partially filled using key A, retry with key B!"));
                 DbpString("[=] Filling emulator memory using key B");
-                filled = MifareECardLoad(sectorsCnt, MF_KEY_B);
+                filled = MifareECardLoad(sectorsCnt, MF_KEY_B, NULL);
                 if (filled != PM3_SUCCESS) {
                     DbpString("[" _YELLOW_("-") "] " _YELLOW_("Only partially filled using key B!"));
                 }
@@ -556,19 +556,7 @@ void RunMod(void) {
             }
 
             uint16_t simflags = 0;
-            switch (mattyrun_card.uidlen) {
-                case 4:
-                    simflags |= FLAG_4B_UID_IN_DATA;
-                    break;
-                case 7:
-                    simflags |= FLAG_7B_UID_IN_DATA;
-                    break;
-                case 10:
-                    simflags |= FLAG_10B_UID_IN_DATA;
-                    break;
-                default:
-                    break;
-            }
+            FLAG_SET_UID_IN_DATA(simflags, mattyrun_card.uidlen);
             uint16_t atqa = (uint16_t)bytes_to_num(mattyrun_card.atqa, 2);
 
             SpinDelay(1000);

@@ -26,9 +26,11 @@
 #include "usart_defs.h"
 #include "util_posix.h"
 #include "comms.h"
+#include "preferences.h"
 
 pm3_device_t *pm3_open(const char *port) {
     pm3_init();
+    preferences_load();
     OpenProxmark(&g_session.current_device, port, false, 20, false, USART_BAUD_RATE);
     if (g_session.pm3_present && (TestProxmark(g_session.current_device) != PM3_SUCCESS)) {
         PrintAndLogEx(ERR, _RED_("ERROR:") " cannot communicate with the Proxmark3\n");
@@ -56,12 +58,14 @@ void pm3_close(pm3_device_t *dev) {
     free_grabber();
 }
 
-int pm3_console(pm3_device_t *dev, const char *cmd, bool passthru) {
+int pm3_console(pm3_device_t *dev, const char *cmd, bool capture, bool quiet) {
     // For now, there is no real device context:
     (void) dev;
     uint8_t prev_printAndLog = g_printAndLog;
-    if (! passthru) {
+    if (capture) {
         g_printAndLog |= PRINTANDLOG_GRAB;
+    }
+    if (quiet) {
         g_printAndLog &= ~PRINTANDLOG_PRINT;
     }
     int ret = CommandReceived(cmd);

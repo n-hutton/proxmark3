@@ -84,8 +84,9 @@ typedef struct {
 typedef struct {
     uint32_t magic;
     uint16_t length : 15;  // length of the variable part, 0 if none.
-    bool ng : 1;
-    int16_t  status;
+    bool     ng : 1;
+    int8_t   status;
+    int8_t   reason;
     uint16_t cmd;
 } PACKED PacketResponseNGPreamble;
 
@@ -101,7 +102,8 @@ typedef struct {
     uint16_t cmd;
     uint16_t length;
     uint32_t magic;      //  NG
-    int16_t  status;     //  NG
+    int8_t   status;     //  NG
+    int8_t   reason;     //  NG
     uint16_t crc;        //  NG
     uint64_t oldarg[3];  //  OLD
     union {
@@ -321,6 +323,7 @@ typedef struct {
 typedef struct {
     uint8_t sectorcnt;
     uint8_t keytype;
+    uint8_t key[6];
 } PACKED mfc_eload_t;
 
 typedef struct {
@@ -430,6 +433,7 @@ typedef struct {
 #define CMD_FLASHMEM_DOWNLOADED                                           0x0124
 #define CMD_FLASHMEM_INFO                                                 0x0125
 #define CMD_FLASHMEM_SET_SPIBAUDRATE                                      0x0126
+#define CMD_FLASHMEM_PAGES64K                                             0x0127
 
 // RDV40, High level flashmem SPIFFS Manipulation
 // ALL function will have a lazy or Safe version
@@ -595,6 +599,7 @@ typedef struct {
 #define CMD_LF_HITAGS_SIMULATE                                            0x0368
 #define CMD_LF_HITAGS_READ                                                0x0373
 #define CMD_LF_HITAGS_WRITE                                               0x0375
+#define CMD_LF_HITAGS_UID                                                 0x037A
 
 #define CMD_LF_HITAG_ELOAD                                                0x0376
 
@@ -604,6 +609,7 @@ typedef struct {
 
 #define CMD_HF_ISO14443A_SNIFF                                            0x0383
 #define CMD_HF_ISO14443A_SIMULATE                                         0x0384
+#define CMD_HF_ISO14443A_SIM_AID                                          0x1420
 
 #define CMD_HF_ISO14443A_READER                                           0x0385
 
@@ -761,19 +767,72 @@ typedef struct {
 #define CMD_UNKNOWN                                                       0xFFFF
 
 //Mifare simulation flags
-#define FLAG_INTERACTIVE        0x01
-#define FLAG_4B_UID_IN_DATA     0x02
-#define FLAG_7B_UID_IN_DATA     0x04
-#define FLAG_10B_UID_IN_DATA    0x08
-#define FLAG_UID_IN_EMUL        0x10
-#define FLAG_NR_AR_ATTACK       0x20
-#define FLAG_MF_MINI            0x80
-#define FLAG_MF_1K              0x100
-#define FLAG_MF_2K              0x200
-#define FLAG_MF_4K              0x400
-#define FLAG_FORCED_ATQA        0x800
-#define FLAG_FORCED_SAK         0x1000
-#define FLAG_CVE21_0430         0x2000
+// In interactive mode, we are expected to finish the operation with an ACK
+#define FLAG_INTERACTIVE        0x0001
+#define FLAG_ATQA_IN_DATA       0x0002
+#define FLAG_SAK_IN_DATA        0x0004
+#define FLAG_RATS_IN_DATA       0x0008
+
+// internal constants, use the function macros instead
+#define FLAG_MASK_UID           0x0030
+#define FLAG_UID_IN_EMUL        0x0000
+#define FLAG_4B_UID_IN_DATA     0x0010
+#define FLAG_7B_UID_IN_DATA     0x0020
+#define FLAG_10B_UID_IN_DATA    0x0030
+// if there is a UID in the data-section to be used:
+// note: if UIDLEN is wrong, we default to FLAG_UID_IN_EMUL
+#define FLAG_SET_UID_IN_DATA(flags, len) {\
+    flags = (flags & (~FLAG_MASK_UID))|\
+        (len == 4 ? FLAG_4B_UID_IN_DATA : \
+        (len == 7 ? FLAG_7B_UID_IN_DATA : \
+        (len == 10 ? FLAG_10B_UID_IN_DATA : \
+        FLAG_UID_IN_EMUL)));\
+    }
+// else we tell to take UID from block 0:
+#define FLAG_SET_UID_IN_EMUL(flags) {flags = (flags & (~FLAG_MASK_UID))|FLAG_UID_IN_EMUL;}
+#define IS_FLAG_UID_IN_DATA(flags, len) (\
+    (flags & FLAG_MASK_UID) == \
+        (len == 4 ? FLAG_4B_UID_IN_DATA : \
+        (len == 7 ? FLAG_7B_UID_IN_DATA : \
+        (len == 10 ? FLAG_10B_UID_IN_DATA : \
+        FLAG_UID_IN_EMUL)))\
+    )
+#define IS_FLAG_UID_IN_EMUL(flags) ((flags & FLAG_MASK_UID) == FLAG_UID_IN_EMUL)
+
+// internal constants, use the function macros instead
+#define MIFARE_4K_MAX_BYTES     4096
+#define MIFARE_2K_MAX_BYTES     2048
+#define MIFARE_1K_MAX_BYTES     1024
+#define MIFARE_MINI_MAX_BYTES   320
+#define FLAG_MASK_MF_SIZE       0x00C0
+#define FLAG_MF_MINI            0x0000
+#define FLAG_MF_1K              0x0040
+#define FLAG_MF_2K              0x0080
+#define FLAG_MF_4K              0x00C0
+#define FLAG_SET_MF_SIZE(flags, size) {\
+    flags = (flags & (~FLAG_MASK_MF_SIZE))|\
+        (size == MIFARE_MINI_MAX_BYTES ? FLAG_MF_MINI : \
+        (size == MIFARE_1K_MAX_BYTES ? FLAG_MF_1K : \
+        (size == MIFARE_2K_MAX_BYTES ? FLAG_MF_2K : \
+        (size == MIFARE_4K_MAX_BYTES ? FLAG_MF_4K : \
+        0))));\
+    }
+// else we tell to take UID from block 0:
+#define IS_FLAG_MF_SIZE(flags, size) (\
+    (flags & FLAG_MASK_MF_SIZE) == \
+        (size == MIFARE_MINI_MAX_BYTES ? FLAG_MF_MINI : \
+        (size == MIFARE_1K_MAX_BYTES ? FLAG_MF_1K : \
+        (size == MIFARE_2K_MAX_BYTES ? FLAG_MF_2K : \
+        (size == MIFARE_4K_MAX_BYTES ? FLAG_MF_4K : \
+        0))))\
+    )
+
+#define FLAG_MF_USE_READ_KEYB   0x0100
+#define FLAG_CVE21_0430         0x0200
+// collect NR_AR responses for bruteforcing later
+#define FLAG_NR_AR_ATTACK       0x0400
+// support nested authentication attack
+#define FLAG_NESTED_AUTH_ATTACK 0x0800
 
 
 #define MODE_SIM_CSN        0
@@ -781,10 +840,11 @@ typedef struct {
 #define MODE_FULLSIM        2
 
 // Static Nonce detection
-#define NONCE_FAIL       0x01
-#define NONCE_NORMAL     0x02
-#define NONCE_STATIC     0x03
-#define NONCE_STATIC_ENC 0x04
+#define NONCE_FAIL        0x01
+#define NONCE_NORMAL      0x02
+#define NONCE_STATIC      0x03
+#define NONCE_STATIC_ENC  0x04
+#define NONCE_SUPERSTATIC 0x05
 
 // Dbprintf flags
 #define FLAG_RAWPRINT    0x00
@@ -859,12 +919,20 @@ typedef struct {
 // Got wrong length error               pm3: when received wrong length of data
 #define PM3_ELENGTH           -27
 
-// No data                              pm3:        no data available, no host frame available (not really an error)
+// No key available                     client/pm3: no cryptographic key available.
+#define PM3_ENOKEY            -28
+
+// No data                              client/pm3: no data available, no host frame available (not really an error)
 #define PM3_ENODATA           -98
 // Quit program                         client:     reserved, order to quit the program
 #define PM3_EFATAL            -99
 // Regular quit
 #define PM3_SQUIT            -100
+
+// reserved for future protocol change
+#define PM3_RESERVED         -128
+
+#define PM3_REASON_UNKNOWN     -1
 
 // LF
 #define LF_FREQ2DIV(f) ((int)(((12000.0 + (f)/2.0)/(f))-1))

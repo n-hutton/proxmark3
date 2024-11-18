@@ -175,11 +175,11 @@ PM3INCLUDES += $(ID48LIBINC)
 ## Lua
 ifneq ($(SKIPLUASYSTEM),1)
     ifdef MACPORTS_PREFIX
-        LUAINCLUDES = $(shell $(PKG_CONFIG_ENV) pkg-config --cflags lua-5.2 2>/dev/null)
-        LUALDLIBS = $(shell $(PKG_CONFIG_ENV) pkg-config --libs lua-5.2 2>/dev/null)
+        LUAINCLUDES = $(shell $(PKG_CONFIG_ENV) pkg-config --cflags lua-5.4 2>/dev/null)
+        LUALDLIBS = $(shell $(PKG_CONFIG_ENV) pkg-config --libs lua-5.4 2>/dev/null)
     else
-        LUAINCLUDES = $(shell $(PKG_CONFIG_ENV) pkg-config --cflags lua5.2 2>/dev/null)
-        LUALDLIBS = $(shell $(PKG_CONFIG_ENV) pkg-config --libs lua5.2 2>/dev/null)
+        LUAINCLUDES = $(shell $(PKG_CONFIG_ENV) pkg-config --cflags lua5.4 2>/dev/null)
+        LUALDLIBS = $(shell $(PKG_CONFIG_ENV) pkg-config --libs lua5.4 2>/dev/null)
     endif
     ifneq ($(LUALDLIBS),)
         LUALIB =
@@ -282,15 +282,15 @@ endif
 ## Python3 (optional)
 ifneq ($(SKIPPYTHON),1)
 # since python3.8, applications willing to embed python must use -embed:
-    PYTHONINCLUDES = $(shell $(PKG_CONFIG_ENV) pkg-config --cflags python3-embed 2>/dev/null)
-    PYTHONLDLIBS = $(shell $(PKG_CONFIG_ENV) pkg-config --libs python3-embed 2>/dev/null)
+    PYTHONINCLUDES = $(shell $(PKG_CONFIG_ENV) pkg-config --cflags $(PYTHON3_PKGCONFIG)-embed 2>/dev/null)
+    PYTHONLDLIBS = $(shell $(PKG_CONFIG_ENV) pkg-config --libs $(PYTHON3_PKGCONFIG)-embed 2>/dev/null)
     ifneq ($(PYTHONLDLIBS),)
         PYTHONLIBLD = $(PYTHONLDLIBS)
         PYTHONLIBINC = $(subst -I,-isystem ,$(PYTHONINCLUDES))
         PYTHON_FOUND = 1
     else
-        PYTHONINCLUDES = $(shell $(PKG_CONFIG_ENV) pkg-config --cflags python3 2>/dev/null)
-        PYTHONLDLIBS = $(shell $(PKG_CONFIG_ENV) pkg-config --libs python3 2>/dev/null)
+        PYTHONINCLUDES = $(shell $(PKG_CONFIG_ENV) pkg-config --cflags $(PYTHON3_PKGCONFIG) 2>/dev/null)
+        PYTHONLDLIBS = $(shell $(PKG_CONFIG_ENV) pkg-config --libs $(PYTHON3_PKGCONFIG) 2>/dev/null)
         ifneq ($(PYTHONLDLIBS),)
             PYTHONLIBLD = $(PYTHONLDLIBS)
             PYTHONLIBINC = $(subst -I,-isystem ,$(PYTHONINCLUDES))
@@ -531,7 +531,7 @@ ifeq ($(SKIPPYTHON),1)
         $(info Python3 library:   skipped)
 else
     ifeq ($(PYTHON_FOUND),1)
-        $(info Python3 library:   Python3 v$(shell $(PKG_CONFIG_ENV) pkg-config --modversion python3) found, enabled)
+        $(info Python3 library:   Python3 v$(shell $(PKG_CONFIG_ENV) pkg-config --modversion $(PYTHON3_PKGCONFIG)) found, enabled)
     else
         $(info Python3 library:   Python3 not found, disabled)
     endif
@@ -730,11 +730,12 @@ SRCS =  mifare/aiddesfire.c \
 		loclass/cipherutils.c \
 		loclass/elite_crack.c \
 		loclass/ikeys.c \
+		lua_bitlib.c \
 		mifare/lrpcrypto.c \
 		mifare/desfirecrypto.c \
 		mifare/desfirecore.c \
-        mifare/desfiresecurechan.c \
-        mifare/desfiretest.c \
+		mifare/desfiresecurechan.c \
+		mifare/desfiretest.c \
 		mifare/gallaghercore.c \
 		mifare/mad.c \
 		mifare/mfkey.c \

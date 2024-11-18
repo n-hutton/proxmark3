@@ -58,8 +58,9 @@ static int sendPing(void) {
     SendCommandNG(CMD_PING, NULL, 0);
     clearCommandBuffer();
     PacketResponseNG resp;
-    if (!WaitForResponseTimeout(CMD_PING, &resp, 1000))
+    if (WaitForResponseTimeout(CMD_PING, &resp, 1000) == false) {
         return PM3_ETIMEOUT;
+    }
     return PM3_SUCCESS;
 }
 static int sendTry(uint8_t format_idx, wiegand_card_t *card, uint32_t delay, bool verbose) {
@@ -375,9 +376,10 @@ static int CmdHIDClone(const char *Cmd) {
     bool q5 = arg_get_lit(ctx, 7);
     bool em = arg_get_lit(ctx, 8);
 
-    // TODO: very confusing sizes... buf of 70, parser len to 63 instead of 70-1, tests for len > 127, loop with 96...
-    int bin_len = 63;
-    uint8_t bin[70] = {0};
+    // t5577 can do 6 blocks with 32bits == 192 bits, HID is manchester encoded and doubles in length.
+    // With parity, manchester and preamble we have about 3 blocks to play with.  Ie:  96 bits
+    uint8_t bin[97] = {0};
+    int bin_len = sizeof(bin) - 1; // CLIGetStrWithReturn does not guarantee string to be null-terminated
     CLIGetStrWithReturn(ctx, 9, bin, &bin_len);
     CLIParserFree(ctx);
 
@@ -386,8 +388,8 @@ static int CmdHIDClone(const char *Cmd) {
         return PM3_EINVARG;
     }
 
-    if (bin_len > 127) {
-        PrintAndLogEx(ERR, "Binary wiegand string must be less than 128 bits");
+    if (bin_len > 96) {
+        PrintAndLogEx(ERR, "Binary wiegand string must be less than 96 bits");
         return PM3_EINVARG;
     }
 
@@ -470,15 +472,17 @@ static int CmdHIDClone(const char *Cmd) {
 
     clearCommandBuffer();
     SendCommandNG(CMD_LF_HID_CLONE, (uint8_t *)&payload, sizeof(payload));
-
     PacketResponseNG resp;
-    WaitForResponse(CMD_LF_HID_CLONE, &resp);
+    if (WaitForResponseTimeout(CMD_LF_HID_CLONE, &resp, 2000) == false) {
+        PrintAndLogEx(WARNING, "timeout while waiting for reply.");
+        return PM3_ETIMEOUT;
+    }
+
     if (resp.status == PM3_SUCCESS) {
+        PrintAndLogEx(SUCCESS, "Done!");
         PrintAndLogEx(HINT, "Hint: try " _YELLOW_("`lf hid reader`") " to verify");
-        PrintAndLogEx(INFO, "Done!");
     } else {
         PrintAndLogEx(FAILED, "cloning ( " _RED_("fail") " )");
-
     }
     return resp.status;
 }

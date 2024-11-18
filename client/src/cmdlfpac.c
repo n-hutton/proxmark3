@@ -236,7 +236,7 @@ static int CmdPacClone(const char *Cmd) {
     };
     CLIExecWithReturn(ctx, Cmd, argtable, false);
 
-    uint8_t cnstr[9] = {0};
+    uint8_t cnstr[10] = {0};
     int cnlen = sizeof(cnstr) - 1; // CLIGetStrWithReturn does not guarantee string to be null-terminated
     memset(cnstr, 0x00, sizeof(cnstr));
     CLIGetStrWithReturn(ctx, 1, cnstr, &cnlen);
@@ -304,7 +304,7 @@ static int CmdPacClone(const char *Cmd) {
     } else {
         res = clone_t55xx_tag(blocks, ARRAYLEN(blocks));
     }
-    PrintAndLogEx(SUCCESS, "Done");
+    PrintAndLogEx(SUCCESS, "Done!");
     PrintAndLogEx(HINT, "Hint: try " _YELLOW_("`lf pac reader`") " to verify");
     return res;
 }
