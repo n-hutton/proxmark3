@@ -629,7 +629,6 @@ static int CmdEMVSelect(const char *Cmd) {
     return PM3_SUCCESS;
 }
 
-// hutton
 static int CmdEMVSmartToNFC(const char *Cmd) {
     CLIParserContext *ctx;
     CLIParserInit(&ctx, "emv smart2nfc",

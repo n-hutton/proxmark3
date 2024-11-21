@@ -675,7 +675,7 @@ void EMVsim(uint16_t flags, uint8_t exitAfterNReads, uint8_t *datain, uint16_t a
                     //static uint8_t extend_resp[] = {0xf2, 0x0d, 0xfd, 0x8a};
                     static uint8_t extend_resp[] = {0xf2, 0x0e, 0x66, 0xb8};
 
-                    // nathan print me
+                    // special print me
                     Dbprintf("\nrecvd from reader:");
                     Dbhexdump(receivedCmd_len, receivedCmd, false);
                     Dbprintf("");

@@ -36,8 +36,6 @@
 #include "i2c.h"
 #include "i2c_direct.h"
 
-//void SmartCardDirectSend(uint8_t prepend, const smart_card_raw_t *p);
-
 static uint8_t fci_template[] = {0x02, 0x6f, 0x5e, 0x84, 0x07, 0xa0, 0x00, 0x00, 0x00, 0x03, 0x10, 0x10, 0xa5, 0x53, 0x50, 0x0a, 0x56, 0x69, 0x73, 0x61, 0x20, 0x44, 0x65, 0x62, 0x69, 0x74, 0x9f, 0x38, 0x18, 0x9f, 0x66, 0x04, 0x9f, 0x02, 0x06, 0x9f, 0x03, 0x06, 0x9f, 0x1a, 0x02, 0x95, 0x05, 0x5f, 0x2a, 0x02, 0x9a, 0x03, 0x9c, 0x01, 0x9f, 0x37, 0x04, 0x5f, 0x2d, 0x02, 0x65, 0x6e, 0x9f, 0x11, 0x01, 0x01, 0x9f, 0x12, 0x0a, 0x56, 0x69, 0x73, 0x61, 0x20, 0x44, 0x65, 0x62, 0x69, 0x74, 0xbf, 0x0c, 0x13, 0x9f, 0x5a, 0x05, 0x31, 0x08, 0x26, 0x08, 0x26, 0x9f, 0x0a, 0x08, 0x00, 0x01, 0x05, 0x01, 0x00, 0x00, 0x00, 0x00, 0x90, 0x00, 0xd8, 0x15};
 
 static uint8_t pay1_response[] = { 0x6F, 0x1E, 0x84, 0x0E, 0x31, 0x50, 0x41, 0x59 };
@@ -131,7 +129,7 @@ void SmartCardDirectSend(uint8_t prepend, const smart_card_raw_t *p, uint8_t *ou
         resp[2] =0x82;
         AddCrc14A(resp, 3);
 
-        //Dbhexdump(5, &resp[0], false); // nathan print
+        //Dbhexdump(5, &resp[0], false); // special print
         //EmSendCmd(&resp[0], 5);
         memcpy(output, resp, 5);
         *olen = 5;
@@ -144,7 +142,7 @@ void SmartCardDirectSend(uint8_t prepend, const smart_card_raw_t *p, uint8_t *ou
         resp[2] =0x82;
         AddCrc14A(resp, 3);
 
-        //Dbhexdump(5, &resp[0], false); // nathan print
+        //Dbhexdump(5, &resp[0], false); // special print
         //EmSendCmd14443aRaw(&resp[0], 5);
         //EmSendCmd(&resp[0], 5);
         memcpy(output, resp, 5);
@@ -153,14 +151,13 @@ void SmartCardDirectSend(uint8_t prepend, const smart_card_raw_t *p, uint8_t *ou
     }
 
     if (len > 2) {
-        // print nathan
         Dbprintf("***** sending it over the wire... len: %d =>\n", len);
         resp[1] = prepend;
 
         // if we have a generate AC request, lets extract the data and populate the template
         if (resp[1] != 0xff && resp[2] == 0x77) {
             Dbprintf("we have detected a generate ac response, lets repackage it!");
-            Dbhexdump(len, &resp[1], false); // nathan print
+            Dbhexdump(len, &resp[1], false); // special print
             // 11 and 12 are trans counter.
             // 16 to 24 are the cryptogram
             // 27 to 34 is issuer application data
@@ -199,11 +196,11 @@ void SmartCardDirectSend(uint8_t prepend, const smart_card_raw_t *p, uint8_t *ou
 
             Dbprintf("\nrearranged is: ");
             len = sizeof(template);
-            Dbhexdump(len, &template[0], false); // nathan print
+            Dbhexdump(len, &template[0], false); // special print
 
             AddCrc14A(&template[1], len-3);
             Dbprintf("\nafter crc rearranged is: ");
-            Dbhexdump(len, &template[0], false); // nathan print
+            Dbhexdump(len, &template[0], false); // special print
             Dbprintf("\n");
 
             //EmSendCmd(&template[1], len-1);
@@ -214,9 +211,9 @@ void SmartCardDirectSend(uint8_t prepend, const smart_card_raw_t *p, uint8_t *ou
             return;
         }
 
-        //Dbhexdump(len, &resp[1], false); // nathan print
+        //Dbhexdump(len, &resp[1], false); // special print
         AddCrc14A(&resp[1], len);
-        Dbhexdump(len+2, &resp[1], false); // nathan print
+        Dbhexdump(len+2, &resp[1], false); // special print
 
         // Check we don't want to modify the response (application profile response)
         //uint8_t modifyme[] = {0x03, 0x77, 0x0e, 0x82, 0x02};
