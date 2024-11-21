@@ -27,7 +27,8 @@
 //  /!\ Printing Debug message is disrupting emulation,
 //  Only use with caution during debugging
 
-//#define FLAG_INTERACTIVE        0x01
+// These are the old flags which have changed in master since this fork was created.
+// Just a temp fix and not intended to go into master
 #define FLAG_4B_UID_IN_DATA_OLD     0x02
 #define FLAG_7B_UID_IN_DATA_OLD     0x04
 #define FLAG_10B_UID_IN_DATA_OLD    0x08
@@ -39,29 +40,25 @@
 #define FLAG_FORCED_ATQA            0x800
 #define FLAG_FORCED_SAK             0x1000
 #define FLAG_CVE21_0430_OLD         0x2000
-//#define FLAG_RATS_IN_DATA_OLD       0x4000
-//#define FLAG_NESTED_AUTH_ATTACK 0x8000
 
 #include "emvsim.h"
-
 #include <inttypes.h>
-
 #include "BigBuf.h"
-#include "iso14443a.h"
-#include "BigBuf.h"
-#include "string.h"
-#include "mifareutil.h"
+//#include "iso14443a.h"
+//#include "BigBuf.h"
+//#include "string.h"
+//#include "mifareutil.h"
 #include "fpgaloader.h"
-#include "proxmark3_arm.h"
-#include "cmd.h"
-#include "protocols.h"
-#include "appmain.h"
-#include "util.h"
-#include "commonutil.h"
-#include "crc16.h"
+//#include "proxmark3_arm.h"
+//#include "cmd.h"
+//#include "protocols.h"
+//#include "appmain.h"
+//#include "util.h"
+//#include "commonutil.h"
+//#include "crc16.h"
 #include "dbprint.h"
-#include "ticks.h"
-#include "i2c.h"
+//#include "ticks.h"
+//#include "i2c.h"
 #include "i2c_direct.h"
 
 #pragma GCC diagnostic ignored "-Wunused-variable"

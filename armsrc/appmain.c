@@ -1629,8 +1629,7 @@ static void PacketReceived(PacketCommandNG *packet) {
             ReaderIso14443a(packet);
             break;
         }
-        case 0x0386: {
-        //case CMD_HF_ISO14443A_EMV_SIMULATE: {
+        case CMD_HF_ISO14443A_EMV_SIMULATE: {
             struct p {
                 uint16_t flags;
                 uint8_t exitAfter;
@@ -1640,9 +1639,6 @@ static void PacketReceived(PacketCommandNG *packet) {
             } PACKED;
             struct p *payload = (struct p *) packet->data.asBytes;
 
-            Dbprintf("We have got hereeee");
-            Dbprintf("Flags: %04x, ExitAfter: %02x, UID: %02x %02x %02x %02x %02x %02x %02x, ATQA: %04x, SAK: %02x",
-                     payload->flags, payload->exitAfter, payload->uid[0], payload->uid[1], payload->uid[2], payload->uid[3], payload->uid[4], payload->uid[5], payload->uid[6], payload->atqa, payload->sak);
             EMVsim(payload->flags, payload->exitAfter, payload->uid, payload->atqa, payload->sak);
             break;
         }
