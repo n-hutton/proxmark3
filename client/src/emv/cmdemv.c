@@ -39,8 +39,6 @@
 #include "crypto/libpcrypto.h"
 #include "iso4217.h"        // currency lookup
 
-//static uint8_t PIV_APPLET[9] = "\xA0\x00\x00\x03\x08\x00\x00\x10\x00";
-
 static int CmdHelp(const char *Cmd);
 
 #define TLV_ADD(tag, value)( tlvdb_change_or_add_node(tlvRoot, tag, sizeof(value) - 1, (const unsigned char *)value) )
@@ -633,9 +631,6 @@ static int CmdEMVSelect(const char *Cmd) {
 
 // hutton
 static int CmdEMVSmartToNFC(const char *Cmd) {
-    //uint8_t data[APDU_AID_LEN] = {0}; // todo: consider removing/cleaning unused vars
-    //int datalen = 0;
-
     CLIParserContext *ctx;
     CLIParserInit(&ctx, "emv smart2nfc",
                   "Executes ISO14443a payment, TX using ISO7816 interface for authentication",
@@ -644,11 +639,6 @@ static int CmdEMVSmartToNFC(const char *Cmd) {
     void *argtable[] = {
             arg_param_begin,
             arg_lit0("t",  "test",    "test that the attached card is working (must be VISA)"),
-            //arg_lit0("k",  "keep",    "Keep field for next command"),
-            //arg_lit0("a",  "apdu",    "Show APDU requests and responses"),
-            //arg_lit0("t",  "tlv",     "TLV decode results"),
-            //arg_lit0("w",  "wired",   "Send data via contact (iso7816) interface. (def: Contactless interface)"),
-            //arg_str1(NULL, NULL, "<hex>", "Choose a UID"),
             arg_str0("u", "uid", "<hex>", "optional 7 hex bytes UID"),
             arg_param_end
     };
@@ -660,8 +650,6 @@ static int CmdEMVSmartToNFC(const char *Cmd) {
 
     if (uid_len == 0) {
         PrintAndLogEx(SUCCESS, "No UID provided, using default.");
-        //memcpy(applet_id, DEFAULT_UID, sizeof(DEFAULT_UID));
-        //aid_len = sizeof(DEFAULT_UID);
         uint8_t default_uid[7] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77};
         memcpy(uid, default_uid, sizeof(default_uid));
         uid_len = sizeof(default_uid);
@@ -681,34 +669,10 @@ static int CmdEMVSmartToNFC(const char *Cmd) {
         PrintAndLogEx(SUCCESS, "Test mode disabled.");
     }
 
-    //bool activateField = arg_get_lit(ctx, 1);
-    //bool leaveSignalON = arg_get_lit(ctx, 2);
-    //bool show_apdu = arg_get_lit(ctx, 3);
-    //bool decodeTLV = arg_get_lit(ctx, 4);
-    //Iso7816CommandChannel channel = CC_CONTACTLESS;
-    //if (arg_get_lit(ctx, 5))
-    //    channel = CC_CONTACT;
-    //PrintChannel(channel);
-    //CLIGetHexWithReturn(ctx, 6, data, &datalen);
     CLIParserFree(ctx);
 
     // todo: check this is relevant for us.
     SetAPDULogging(show_apdu);
-
-    //int res = EMVSmartToNFC(testMode);
-
-    //if (!res) {
-    //    PrintAndLogEx(SUCCESS, "EMVSmartToNFC completed successfully.");
-    //} else {
-    //    PrintAndLogEx(FAILED, "EMVSmartToNFC failed.");
-    //}
-
-    //struct {
-    //    uint8_t tagtype;
-    //    uint16_t flags;
-    //    uint8_t uid[10];
-    //    uint8_t exitAfter;
-    //} PACKED payload;
 
     struct {
         uint16_t flags;
@@ -725,7 +689,6 @@ static int CmdEMVSmartToNFC(const char *Cmd) {
     payload.sak = 0x20;
 
     clearCommandBuffer();
-    //SendCommandNG(CMD_HF_ISO14443A_EMV_SIMULATE, (uint8_t *)&payload, sizeof(payload));
     SendCommandNG(0x0386, (uint8_t *)&payload, sizeof(payload));
 
     PrintAndLogEx(INFO, "Press " _GREEN_("pm3 button") " to abort simulation");

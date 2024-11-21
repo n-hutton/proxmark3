@@ -157,35 +157,35 @@ static bool MifareSimInit(uint16_t flags, uint8_t *datain, uint16_t atqa, uint8_
     if ((flags & FLAG_MF_MINI_OLD) == FLAG_MF_MINI_OLD) {
         memcpy(rATQA, rATQA_Mini, sizeof(rATQA));
         rSAK[0] = rSAK_Mini;
-        if (999 > DBG_NONE) Dbprintf("Enforcing Mifare Mini ATQA/SAK");
+        if (g_dbglevel > DBG_NONE) Dbprintf("Enforcing Mifare Mini ATQA/SAK");
     } else if ((flags & FLAG_MF_1K_OLD) == FLAG_MF_1K_OLD) {
         memcpy(rATQA, rATQA_1k, sizeof(rATQA));
         rSAK[0] = rSAK_1k;
-        if (999 > DBG_NONE) Dbprintf("Enforcing Mifare 1K ATQA/SAK (!!!!)");
+        if (g_dbglevel > DBG_NONE) Dbprintf("Enforcing Mifare 1K ATQA/SAK (!!!!)");
     } else if ((flags & FLAG_MF_2K_OLD) == FLAG_MF_2K_OLD) {
         memcpy(rATQA, rATQA_2k, sizeof(rATQA));
         rSAK[0] = rSAK_2k;
         *rats = rRATS;
         *rats_len = sizeof(rRATS);
-        if (999 > DBG_NONE) Dbprintf("Enforcing Mifare 2K ATQA/SAK with RATS support");
+        if (g_dbglevel > DBG_NONE) Dbprintf("Enforcing Mifare 2K ATQA/SAK with RATS support");
     } else if ((flags & FLAG_MF_4K_OLD) == FLAG_MF_4K_OLD) {
         memcpy(rATQA, rATQA_4k, sizeof(rATQA));
         rSAK[0] = rSAK_4k;
-        if (999 > DBG_NONE) Dbprintf("Enforcing Mifare 4K ATQA/SAK");
+        if (g_dbglevel > DBG_NONE) Dbprintf("Enforcing Mifare 4K ATQA/SAK");
     }
 
     // Prepare UID arrays
     if ((flags & FLAG_4B_UID_IN_DATA_OLD) == FLAG_4B_UID_IN_DATA_OLD) { // get UID from datain
         memcpy(rUIDBCC1, datain, 4);
         *uid_len = 4;
-        if (999 >= DBG_EXTENDED)
+        if (g_dbglevel >= DBG_EXTENDED)
             Dbprintf("MifareSimInit - FLAG_4B_UID_IN_DATA_OLD => Get UID from datain: %02X - Flag: %02X - UIDBCC1: %02X", FLAG_4B_UID_IN_DATA_OLD, flags, rUIDBCC1);
 
         // save CUID
         *cuid = bytes_to_num(rUIDBCC1, 4);
         // BCC
         rUIDBCC1[4] = rUIDBCC1[0] ^ rUIDBCC1[1] ^ rUIDBCC1[2] ^ rUIDBCC1[3];
-        if (999 > DBG_NONE) {
+        if (g_dbglevel > DBG_NONE) {
             Dbprintf("4B UID: %02x%02x%02x%02x", rUIDBCC1[0], rUIDBCC1[1], rUIDBCC1[2], rUIDBCC1[3]);
         }
 
@@ -196,7 +196,7 @@ static bool MifareSimInit(uint16_t flags, uint8_t *datain, uint16_t atqa, uint8_
         memcpy(&rUIDBCC1[1], datain, 3);
         memcpy(rUIDBCC2, datain + 3, 4);
         *uid_len = 7;
-        if (999 >= DBG_EXTENDED)
+        if (g_dbglevel >= DBG_EXTENDED)
             Dbprintf("MifareSimInit - FLAG_7B_UID_IN_DATA_OLD => Get UID from datain: %02X - Flag: %02X - UIDBCC1: %02X", FLAG_7B_UID_IN_DATA_OLD, flags, rUIDBCC1);
 
         // save CUID
@@ -206,7 +206,7 @@ static bool MifareSimInit(uint16_t flags, uint8_t *datain, uint16_t atqa, uint8_
         // BCC
         rUIDBCC1[4] = rUIDBCC1[0] ^ rUIDBCC1[1] ^ rUIDBCC1[2] ^ rUIDBCC1[3];
         rUIDBCC2[4] = rUIDBCC2[0] ^ rUIDBCC2[1] ^ rUIDBCC2[2] ^ rUIDBCC2[3];
-        if (999 > DBG_NONE) {
+        if (g_dbglevel > DBG_NONE) {
             Dbprintf("7B UID: %02x %02x %02x %02x %02x %02x %02x",
                      rUIDBCC1[1], rUIDBCC1[2], rUIDBCC1[3], rUIDBCC2[0], rUIDBCC2[1], rUIDBCC2[2], rUIDBCC2[3]);
         }
@@ -219,7 +219,7 @@ static bool MifareSimInit(uint16_t flags, uint8_t *datain, uint16_t atqa, uint8_
         memcpy(&rUIDBCC2[1], datain + 3, 3);
         memcpy(rUIDBCC3,    datain + 6, 4);
         *uid_len = 10;
-        if (999 >= DBG_EXTENDED)
+        if (g_dbglevel >= DBG_EXTENDED)
             Dbprintf("MifareSimInit - FLAG_10B_UID_IN_DATA_OLD => Get UID from datain: %02X - Flag: %02X - UIDBCC1: %02X", FLAG_10B_UID_IN_DATA_OLD, flags, rUIDBCC1);
 
         // save CUID
@@ -232,7 +232,7 @@ static bool MifareSimInit(uint16_t flags, uint8_t *datain, uint16_t atqa, uint8_
         rUIDBCC2[4] = rUIDBCC2[0] ^ rUIDBCC2[1] ^ rUIDBCC2[2] ^ rUIDBCC2[3];
         rUIDBCC3[4] = rUIDBCC3[0] ^ rUIDBCC3[1] ^ rUIDBCC3[2] ^ rUIDBCC3[3];
 
-        if (999 > DBG_NONE) {
+        if (g_dbglevel > DBG_NONE) {
             Dbprintf("10B UID: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x",
                      rUIDBCC1[1], rUIDBCC1[2], rUIDBCC1[3],
                      rUIDBCC2[1], rUIDBCC2[2], rUIDBCC2[3],
@@ -255,7 +255,7 @@ static bool MifareSimInit(uint16_t flags, uint8_t *datain, uint16_t atqa, uint8_
         rSAK[0] = sak;
     }
 
-    if (999 > DBG_NONE) {
+    if (g_dbglevel > DBG_NONE) {
         Dbprintf("ATQA  : %02X %02X", rATQA[1], rATQA[0]);
         Dbprintf("SAK   : %02X", rSAK[0]);
     }
@@ -352,8 +352,6 @@ void EMVsim(uint16_t flags, uint8_t exitAfterNReads, uint8_t *datain, uint16_t a
     uint8_t uid_len = 0; // 4, 7, 10
     uint32_t cuid = 0, authTimer = 0;
     uint32_t nr, ar;
-    //uint8_t blockNo;
-    //bool encrypted_data;
 
     uint8_t cardWRBL = 0;
     uint8_t cardAUTHSC = 0;
@@ -382,13 +380,8 @@ void EMVsim(uint16_t flags, uint8_t exitAfterNReads, uint8_t *datain, uint16_t a
         Dbprintf("receivedCmd_len_copy: %d", receivedCmd_len_copy);
     }
 
-    //volatile uint8_t response[MAX_MIFARE_FRAME_SIZE] = {0x00};
-    uint8_t response[MAX_MIFARE_FRAME_SIZE] = {0x00};
-    uint8_t response_par[MAX_MIFARE_PARITY_SIZE] = {0x00};
-
     uint8_t *rats = NULL;
     uint8_t rats_len = 0;
-
 
     // if fct is called with NULL we need to assign some memory since this pointer is passaed around
     uint8_t datain_tmp[10] = {0};
@@ -406,35 +399,20 @@ void EMVsim(uint16_t flags, uint8_t exitAfterNReads, uint8_t *datain, uint16_t a
 
     uint8_t ar_nr_collected[ATTACK_KEY_COUNT * 2]; // *2 for 2nd attack type (moebius)
     memset(ar_nr_collected, 0x00, sizeof(ar_nr_collected));
-    uint8_t nonce1_count = 0;
-    uint8_t nonce2_count = 0;
-    uint8_t moebius_n_count = 0;
     bool gettingMoebius = false;
-    uint8_t mM = 0; //moebius_modifier for collection storage
-
-    // Authenticate response - nonce
-    //uint8_t rAUTH_NT[4] = {0, 0, 0, 1};
-    //uint8_t rAUTH_NT_keystream[4];
-    uint32_t nonce = 0;
 
     const tUart14a *uart = GetUart14a();
 
     // free eventually allocated BigBuf memory but keep Emulator Memory
     BigBuf_free_keep_EM();
 
-    Dbprintf("Sim init...");
-
     if (MifareSimInit(flags, datain, atqa, sak, &responses, &cuid, &uid_len, &rats, &rats_len) == false) {
         BigBuf_free_keep_EM();
         return;
     }
 
-    Dbprintf("Sim finish...");
-
     // We need to listen to the high-frequency, peak-detected path.
     iso14443a_setup(FPGA_HF_ISO14443A_TAGSIM_LISTEN);
-
-    Dbprintf("Sim finish...");
 
     // clear trace
     clear_trace();
@@ -443,15 +421,10 @@ void EMVsim(uint16_t flags, uint8_t exitAfterNReads, uint8_t *datain, uint16_t a
     ResetSspClk();
 
     uint8_t *p_em = BigBuf_get_EM_addr();
-    //uint8_t cve_flipper = 0;
 
     int counter = 0;
     bool finished = false;
     bool button_pushed = BUTTON_PRESS();
-
-    // nathan
-
-    Dbprintf("Loop ending!");
 
     while ((button_pushed == false) && (finished == false)) {
 
@@ -470,33 +443,10 @@ void EMVsim(uint16_t flags, uint8_t exitAfterNReads, uint8_t *datain, uint16_t a
         FpgaEnableTracing();
         // Now, get data from the FPGA
         int res = EmGetCmd(receivedCmd, sizeof(receivedCmd), &receivedCmd_len, receivedCmd_par);
-        bool was_three = false;
-
-        if (receivedCmd[0] == 3) {
-            was_three = true;
-        }
-
-        if (was_three && receivedCmd[0] != 3) {
-            Dbprintf("We have found our segv here 000");
-        }
-
-        // print the commmand we got and its length
-
-        //if(receivedCmd_len > 1) {
-        //    Dbprintf("Received command: %d bytes", receivedCmd_len);
-        //    //Dbhexdump(receivedCmd_len, receivedCmd, false);
-        //}
-
-        //Dbprintf("Received command: %d bytes", receivedCmd_len); // this breaks the emulator
-        //Dbhexdump(receivedCmd_len, receivedCmd, false);
-
-        //int res = EmGetCmd(receivedCmd, &receivedCmd_len, receivedCmd_par); // nathan old - seems like bugfix.
 
         if (res == 2) { //Field is off!
-            //FpgaDisableTracing();
             if ((flags & FLAG_CVE21_0430_OLD) == FLAG_CVE21_0430_OLD) {
                 p_em[1] = 0x21;
-                //cve_flipper = 0;
             }
             LEDsoff();
             if (cardSTATE != MFEMUL_NOFIELD) {
@@ -508,80 +458,42 @@ void EMVsim(uint16_t flags, uint8_t exitAfterNReads, uint8_t *datain, uint16_t a
         } else if (res == 1) { // button pressed
             FpgaDisableTracing();
             button_pushed = true;
-            if (999 >= DBG_EXTENDED)
+            if (g_dbglevel >= DBG_EXTENDED)
                 Dbprintf("Button pressed");
             break;
         }
 
-        if (was_three && receivedCmd[0] != 3) {
-            Dbprintf("We have found our segv here 001");
-        }
-
         // WUPA in HALTED state or REQA or WUPA in any other state
         if (receivedCmd_len == 1 && ((receivedCmd[0] == ISO14443A_CMD_REQA && cardSTATE != MFEMUL_HALTED) || receivedCmd[0] == ISO14443A_CMD_WUPA)) {
-            //selTimer = GetTickCount();
-            if (999 >= DBG_EXTENDED) {
-                //Dbprintf("EmSendPrecompiledCmd(&responses[ATQA]);");
-            }
             EmSendPrecompiledCmd(&responses[ATQA]);
 
             FpgaDisableTracing();
-
-            if (was_three && receivedCmd[0] != 3) {
-                Dbprintf("We have found our segv here 002");
-            }
-
-            /*
-            // init crypto block
-            crypto1_deinit(pcs);
-            cardAUTHKEY = AUTHKEYNONE;
-            nonce = prng_successor(selTimer, 32);
-            // prepare NT for nested authentication
-            num_to_bytes(nonce, 4, rAUTH_NT);
-            num_to_bytes(cuid ^ nonce, 4, rAUTH_NT_keystream); */ // hutton removed dead code
 
             LED_B_OFF();
             LED_C_OFF();
             cardSTATE = MFEMUL_SELECT;
 
-            /*if ((flags & FLAG_CVE21_0430) == FLAG_CVE21_0430) {
-                p_em[1] = 0x21;
-                cve_flipper = 0;
-            } */
             continue;
-        }
-
-        if (was_three && receivedCmd[0] != 3) {
-            Dbprintf("We have found our segv here 003");
         }
 
         switch (cardSTATE) {
             case MFEMUL_NOFIELD: {
-                if (999 >= DBG_EXTENDED)
+                if (g_dbglevel >= DBG_EXTENDED)
                     Dbprintf("MFEMUL_NOFIELD");
 
-                if (was_three && receivedCmd[0] != 3) {
-                    Dbprintf("We have found our segv here 102");
-                }
                 break;
             }
             case MFEMUL_HALTED: {
-                if (999 >= DBG_EXTENDED)
+                if (g_dbglevel >= DBG_EXTENDED)
                     Dbprintf("MFEMUL_HALTED");
 
-                if (was_three && receivedCmd[0] != 3) {
-                    Dbprintf("We have found our segv here 102");
-                }
                 break;
             }
             case MFEMUL_IDLE: {
                 LogTrace(uart->output, uart->len, uart->startTime * 16 - DELAY_AIR2ARM_AS_TAG, uart->endTime * 16 - DELAY_AIR2ARM_AS_TAG, uart->parity, true);
-                if (999 >= DBG_EXTENDED)
+                if (g_dbglevel >= DBG_EXTENDED)
                     Dbprintf("MFEMUL_IDLE");
 
-                if (was_three && receivedCmd[0] != 3) {
-                    Dbprintf("We have found our segv here 102");
-                }
                 break;
             }
 
@@ -598,85 +510,56 @@ void EMVsim(uint16_t flags, uint8_t exitAfterNReads, uint8_t *datain, uint16_t a
                 //    same as multiple tags. For details see chapter 6.1.5.3 of ISO/IEC 14443-3
             case MFEMUL_SELECT: {
 
-                if (was_three && receivedCmd[0] != 3) {
-                    Dbprintf("We have found our segv here 004");
-                }
-
-                // Dbprintf("MFEMUL_SELECT 001"); // hutton disable comment
                 int uid_index = -1;
                 // Extract cascade level
                 if (receivedCmd_len >= 2) {
                     switch (receivedCmd[0]) {
                         case ISO14443A_CMD_ANTICOLL_OR_SELECT:
-                            // Dbprintf("MFEMUL_SELECT 002"); // hutton disable comment
                             uid_index = UIDBCC1;
                             break;
                         case ISO14443A_CMD_ANTICOLL_OR_SELECT_2:
-                            // Dbprintf("MFEMUL_SELECT 003"); // hutton disable comment
                             uid_index = UIDBCC2;
                             break;
                         case ISO14443A_CMD_ANTICOLL_OR_SELECT_3:
-                            Dbprintf("MFEMUL_SELECT 004");
                             uid_index = UIDBCC3;
                             break;
                     }
                 }
 
-                if (was_three && receivedCmd[0] != 3) {
-                    Dbprintf("We have found our segv here 005");
-                }
-
                 if (uid_index < 0) {
                     LogTrace(uart->output, uart->len, uart->startTime * 16 - DELAY_AIR2ARM_AS_TAG, uart->endTime * 16 - DELAY_AIR2ARM_AS_TAG, uart->parity, true);
                     cardSTATE_TO_IDLE();
-                    // Dbprintf("incorrect cascade level received 001"); // hutton disable comment
-                    //if (999 >= DBG_EXTENDED) Dbprintf("[MFEMUL_SELECT] Incorrect cascade level received"); // nathan print
                     break;
-                }
-
-                if (was_three && receivedCmd[0] != 3) {
-                    Dbprintf("We have found our segv here 006");
                 }
 
                 // Incoming SELECT ALL for any cascade level
                 if (receivedCmd_len == 2 && receivedCmd[1] == 0x20) {
-                    // Dbprintf("incoming select all 001"); // hutton disable comment
                     EmSendPrecompiledCmd(&responses[uid_index]);
                     FpgaDisableTracing();
 
-                    //if (999 >= DBG_EXTENDED) Dbprintf("SELECT ALL - EmSendPrecompiledCmd(%02x)", &responses[uid_index]); // nathan print
                     break;
                 }
 
                 // Incoming SELECT CLx for any cascade level
                 if (receivedCmd_len == 9 && receivedCmd[1] == 0x70) {
-                    // Dbprintf("incoming select clx 001"); // hutton disable comment
                     if (memcmp(&receivedCmd[2], responses[uid_index].response, 4) == 0) {
                         bool cl_finished = (uid_len == 4  && uid_index == UIDBCC1) ||
                                            (uid_len == 7  && uid_index == UIDBCC2) ||
                                            (uid_len == 10 && uid_index == UIDBCC3);
-                        //Dbprintf("send sak command 001"); // hutton disable comment
                         EmSendPrecompiledCmd(&responses[cl_finished ? SAK : SAKuid]);
                         FpgaDisableTracing();
 
-                        //if (999 >= DBG_EXTENDED) Dbprintf("SELECT CLx %02x%02x%02x%02x received", receivedCmd[2], receivedCmd[3], receivedCmd[4], receivedCmd[5]); // nathan print
                         if (cl_finished) {
                             LED_B_ON();
                             cardSTATE = MFEMUL_WORK;
-                            // Dbprintf("MFEMUL_WORK state 001"); // hutton disable comment
-                            //if (999 >= DBG_EXTENDED) Dbprintf("[MFEMUL_SELECT] cardSTATE = MFEMUL_WORK"); // nathan print
                         }
                     } else {
                         // IDLE, not our UID
                         LogTrace(uart->output, uart->len, uart->startTime * 16 - DELAY_AIR2ARM_AS_TAG, uart->endTime * 16 - DELAY_AIR2ARM_AS_TAG, uart->parity, true);
                         cardSTATE_TO_IDLE();
-                        if (999 >= DBG_EXTENDED) Dbprintf("[MFEMUL_SELECT] cardSTATE = MFEMUL_IDLE");
+                        if (g_dbglevel >= DBG_EXTENDED) Dbprintf("[MFEMUL_SELECT] cardSTATE = MFEMUL_IDLE");
                     }
                     break;
-                }
-
-                if (was_three && receivedCmd[0] != 3) {
-                    Dbprintf("We have found our segv here 007");
                 }
 
                 // Incoming anti-collision frame
@@ -688,18 +571,13 @@ void EMVsim(uint16_t flags, uint8_t exitAfterNReads, uint8_t *datain, uint16_t a
                         EmSendPrecompiledCmd(&responses[uid_index + receivedCmd_len - 2]);
                         FpgaDisableTracing();
 
-                        if (999 >= DBG_EXTENDED) Dbprintf("SELECT ANTICOLLISION - EmSendPrecompiledCmd(%02x)", &responses[uid_index]);
+                        if (g_dbglevel >= DBG_EXTENDED) Dbprintf("SELECT ANTICOLLISION - EmSendPrecompiledCmd(%02x)", &responses[uid_index]);
                         Dbprintf("001 SELECT ANTICOLLISION - EmSendPrecompiledCmd(%02x)", &responses[uid_index]);
                     } else {
                         // IDLE, not our UID or split-byte frame anti-collision (not supports)
                         LogTrace(uart->output, uart->len, uart->startTime * 16 - DELAY_AIR2ARM_AS_TAG, uart->endTime * 16 - DELAY_AIR2ARM_AS_TAG, uart->parity, true);
                         cardSTATE_TO_IDLE();
-                        if (999 >= DBG_EXTENDED) Dbprintf("[MFEMUL_SELECT] cardSTATE = MFEMUL_IDLE");
-                        Dbprintf("001 [MFEMUL_SELECT] cardSTATE = MFEMUL_IDLE");
-                    }
-
-                    if (was_three && receivedCmd[0] != 3) {
-                        Dbprintf("We have found our segv here 008");
+                        if (g_dbglevel >= DBG_EXTENDED) Dbprintf("[MFEMUL_SELECT] cardSTATE = MFEMUL_IDLE");
                     }
 
                     break;
@@ -709,53 +587,24 @@ void EMVsim(uint16_t flags, uint8_t exitAfterNReads, uint8_t *datain, uint16_t a
                 LogTrace(uart->output, uart->len, uart->startTime * 16 - DELAY_AIR2ARM_AS_TAG, uart->endTime * 16 - DELAY_AIR2ARM_AS_TAG, uart->parity, true);
                 cardSTATE_TO_IDLE();
 
-                if (was_three && receivedCmd[0] != 3) {
-                    Dbprintf("We have found our segv here 009");
-                }
-
-                if (999 >= DBG_EXTENDED) Dbprintf("[MFEMUL_SELECT] Unknown selection procedure");
-                Dbprintf("001 [MFEMUL_SELECT] Unknown selection procedure");
+                if (g_dbglevel >= DBG_EXTENDED) Dbprintf("[MFEMUL_SELECT] Unknown selection procedure");
                 break;
             }
 
                 // WORK
             case MFEMUL_WORK: {
 
-                // Dbprintf("MFEMUL_WORK 001"); // hutton disable comment
-                if (999 >= DBG_EXTENDED) {
-                    // Dbprintf("[MFEMUL_WORK] Enter in case");
-                }
-
-                if (was_three && receivedCmd[0] != 3) {
-                    Dbprintf("We have found our segv here 102");
-                }
-
                 if (receivedCmd_len == 0) {
-                    if (999 >= DBG_EXTENDED) Dbprintf("[MFEMUL_WORK] NO CMD received");
+                    if (g_dbglevel >= DBG_EXTENDED) Dbprintf("[MFEMUL_WORK] NO CMD received");
                     Dbprintf("001 [MFEMUL_WORK] NO CMD received");
                     break;
-                }
-                if (was_three && receivedCmd[0] != 3) {
-                    Dbprintf("We have found our segv here 101");
                 }
 
                 memcpy(receivedCmd_dec, receivedCmd, receivedCmd_len);
 
-                if (was_three && receivedCmd[0] != 3) {
-                    // print length copied
-                    Dbprintf("The length of receivedCmd_dec is %d", receivedCmd_len);
-                }
-
-                if (was_three && receivedCmd[0] != 3) {
-                    Dbprintf("We have found our segv here 00a");
-                }
-
                 // all commands must have a valid CRC
                 if (!CheckCrc14A(receivedCmd_dec, receivedCmd_len)) {
-                    //EmSend4bit(encrypted_data ? mf_crypto1_encrypt4bit(pcs, CARD_NACK_NA) : CARD_NACK_NA);
-                    //FpgaDisableTracing();
-
-                    if (999 >= DBG_EXTENDED) Dbprintf("[MFEMUL_WORK] All commands must have a valid CRC %02X (%d)", receivedCmd_dec, receivedCmd_len);
+                    if (g_dbglevel >= DBG_EXTENDED) Dbprintf("[MFEMUL_WORK] All commands must have a valid CRC %02X (%d)", receivedCmd_dec, receivedCmd_len);
                     break;
                 }
 
@@ -763,27 +612,17 @@ void EMVsim(uint16_t flags, uint8_t exitAfterNReads, uint8_t *datain, uint16_t a
                 // BUT... ACK --> NACK
                 if (receivedCmd_len == 1 && receivedCmd_dec[0] == CARD_ACK) {
                     Dbprintf("[MFEMUL_WORK] ACK --> NACK !!");
-                    //EmSend4bit(encrypted_data ? mf_crypto1_encrypt4bit(pcs, CARD_NACK_NA) : CARD_NACK_NA);
                     EmSend4bit(CARD_NACK_NA);
                     FpgaDisableTracing();
                     break;
                 }
 
-                if (was_three && receivedCmd[0] != 3) {
-                    Dbprintf("We have found our segv here 00b");
-                }
-
                 // rule 12 of 7.5.3. in ISO 14443-4. R(NAK) --> R(ACK)
                 if (receivedCmd_len == 1 && receivedCmd_dec[0] == CARD_NACK_NA) {
                     Dbprintf("[MFEMUL_WORK] NACK --> NACK !!");
-                    //EmSend4bit(encrypted_data ? mf_crypto1_encrypt4bit(pcs, CARD_ACK) : CARD_ACK);
                     EmSend4bit(CARD_ACK);
                     FpgaDisableTracing();
                     break;
-                }
-
-                if (was_three && receivedCmd[0] != 3) {
-                    Dbprintf("We have found our segv here 00c");
                 }
 
                 // case MFEMUL_WORK => CMD RATS
@@ -792,19 +631,13 @@ void EMVsim(uint16_t flags, uint8_t exitAfterNReads, uint8_t *datain, uint16_t a
                         EmSendCmd(rats, rats_len);
                         FpgaDisableTracing();
                     } else {
-                        Dbprintf("Rats and rats len is: %d, %d", rats[0], rats_len);
-                        //EmSend4bit(encrypted_data ? mf_crypto1_encrypt4bit(pcs, CARD_NACK_NA) : CARD_NACK_NA);
                         EmSend4bit(CARD_NACK_NA);
                         FpgaDisableTracing();
                         cardSTATE_TO_IDLE();
-                        if (999 >= DBG_EXTENDED)
+                        if (g_dbglevel >= DBG_EXTENDED)
                             Dbprintf("[MFEMUL_WORK] RCV RATS => NACK");
                     }
                     break;
-                }
-
-                if (was_three && receivedCmd[0] != 3) {
-                    Dbprintf("We have found our segv here 00d");
                 }
 
                 // case MFEMUL_WORK => ISO14443A_CMD_NXP_DESELECT
@@ -813,25 +646,19 @@ void EMVsim(uint16_t flags, uint8_t exitAfterNReads, uint8_t *datain, uint16_t a
                         EmSendCmd(receivedCmd_dec, receivedCmd_len);
 
                         FpgaDisableTracing();
-                        if (999 >= DBG_EXTENDED)
+                        if (g_dbglevel >= DBG_EXTENDED)
                             Dbprintf("[MFEMUL_WORK] RCV NXP DESELECT => ACK");
                     } else {
-                        //EmSend4bit(encrypted_data ? mf_crypto1_encrypt4bit(pcs, CARD_NACK_NA) : CARD_NACK_NA);
                         EmSend4bit(CARD_NACK_NA);
                         FpgaDisableTracing();
                         cardSTATE_TO_IDLE();
-                        if (999 >= DBG_EXTENDED)
+                        if (g_dbglevel >= DBG_EXTENDED)
                             Dbprintf("[MFEMUL_WORK] RCV NXP DESELECT => NACK");
                     }
                     break;
                 }
-                if (was_three && receivedCmd[0] != 3) {
-                    Dbprintf("We have found our segv here 00e");
-                }
 
-                // case MFEMUL_WORK => command not allowed nathan nathan
-                Dbprintf("Received command not allowed nathanxx");
-                if (999 >= DBG_EXTENDED) {
+                //if (g_dbglevel >= DBG_EXTENDED) {
                     // The WTX we want to send out...
                     //static uint8_t extend_resp[] = {0xf2, 0x01, 0x91, 0x40};
                     //static uint8_t extend_resp[] = {0xf2, 0x02, 0x0a, 0x72};
@@ -869,22 +696,13 @@ void EMVsim(uint16_t flags, uint8_t exitAfterNReads, uint8_t *datain, uint16_t a
                         //uint8_t modified_response[] = { 0x03, 0x77, 0x0e, 0x82, 0x02, 0x39, 0x80, 0x94, 0x08, 0x18, 0x01, 0x02, 0x01, 0x20, 0x01, 0x04, 0x00, 0x90, 0x00, 0x03, 0xec };
                         EmSendCmd(&fci_template[0], sizeof(fci_template));
 
-                        //for (int i = 0; i < sizeof(fci_template); i++) {
-                        //    Dbprintf("%02x ", fci_template[i]);
-                        //}
-
                         continue;
                     }
 
-                    //if (memcmp(&pay1_query[0], receivedCmd, sizeof(pay1_query)) == 0 && false) {
-                    //    Dbprintf("We see we made a pay1 query to the card... lets return a pay2 response!");
-                    //    EmSendCmd(&pay2_response[0], sizeof(pay2_response));
-                    //    continue;
-                    //}
-
                     // We want to modify corrupted request
                     if ((receivedCmd_len > 5 && receivedCmd[0] != 0x03 && receivedCmd[0] != 0x02 && receivedCmd[1] == 0 && receivedCmd[4] == 0) || (receivedCmd[2] == 0xa8)) {
-                        Dbprintf("We saw corrupted request... modifying it into a generate ac transaction !!!!");
+                    //if (receivedCmd[2] == 0xa8) {
+                        Dbprintf("We saw signing request... modifying it into a generate ac transaction !!!!");
                         receivedCmd[0] = 0x03;
                         receivedCmd[1] = 0x80;
                         receivedCmd[2] = 0xae;
@@ -910,33 +728,10 @@ void EMVsim(uint16_t flags, uint8_t exitAfterNReads, uint8_t *datain, uint16_t a
                         Dbprintf("We saw 1PA... !!!!");
                     }
 
-                    if (was_three && receivedCmd[0] != 3) {
-                        Dbprintf("We have found our segv here 00f");
-                    }
-
                     // Request more time for 2PAY and respond with a modified 1PAY request
                     if (receivedCmd_len >= 9 && receivedCmd[6] == '2' && receivedCmd[7] == 'P' && receivedCmd[8] == 'A') {
                         Dbprintf("We saw 2PA... switching it to 1PAY !!!!");
                         receivedCmd[6] = '1';
-
-                        if (was_three) {
-                            Dbprintf("It used to be three...");
-                        }
-
-                        /*
-                        //static uint8_t modified_to_say_2pay[]  = { 0x03, 0x6F, 0x1A, 0x84, 0x0E, 0x32, 0x50, 0x41, 0x59, 0x2E, 0x53, 0x59, 0x53, 0x2E, 0x44, 0x44, 0x46, 0x30, 0x31, 0xA5, 0x08, 0x88, 0x01, 0x01, 0x5F, 0x2D, 0x02, 0x65, 0x6E, 0x90, 0x00, 0x7B, 0x7D};
-                        static uint8_t original_card_response[] =
-                                { 0x03, 0x6f, 0x2e, 0x84, 0x0e, 0x32, 0x50, 0x41, 0x59, 0x2e, 0x53, 0x59, 0x53, 0x2e, 0x44, 0x44, 0x46, 0x30, 0x31, 0xa5, 0x1c, 0xbf, 0x0c, 0x19, 0x61, 0x17, 0x4f, 0x07, 0xa0, 0x00, 0x00, 0x00, 0x04, 0x10, 0x10, 0x87, 0x01, 0x01, 0x9f, 0x0a, 0x08, 0x00, 0x01, 0x05, 0x02, 0x00, 0x00, 0x00, 0x00, 0x90, 0x00, 0x33, 0x4e};
-                        EmSendCmd(original_card_response, sizeof(original_card_response));
-                        continue;
-                         */
-
-                        //EmSendCmd(extend_resp, 4);
-
-                        //// copy the command and its length
-                        //receivedCmd[6] = '1';
-                        //memcpy(receivedCmd_copy, receivedCmd, receivedCmd_len);
-                        //receivedCmd_len_copy = receivedCmd_len;
                     }
 
                     static uint8_t rnd_resp[] = {0xb2, 0x67, 0xc7};
@@ -947,10 +742,6 @@ void EMVsim(uint16_t flags, uint8_t exitAfterNReads, uint8_t *datain, uint16_t a
 
                     // We have received the response from a WTX command! Process the cached command at this point.
                     if (memcmp(receivedCmd, extend_resp, sizeof(extend_resp)) == 0) {
-                        //Dbprintf("We saw wtx response... !");
-                        //waiting_wtx_response = false;
-                        // Now process pending command!
-
                         // Special case: if we are about to do a generate AC, we also need to
                         // make a request for pdol...
                         if (receivedCmd_copy[1] == 0x80 && receivedCmd_copy[2] == 0xae) {
@@ -966,7 +757,6 @@ void EMVsim(uint16_t flags, uint8_t exitAfterNReads, uint8_t *datain, uint16_t a
                         EmSendCmd(responseToReader, responseToReader_len);
 
                         Dbprintf("Sent delayed command to card...");
-                        //EmSendCmd(thirdResponse, sizeof(thirdResponse));
                         continue;
                     }
 
@@ -979,31 +769,18 @@ void EMVsim(uint16_t flags, uint8_t exitAfterNReads, uint8_t *datain, uint16_t a
                     receivedCmd_len_copy = receivedCmd_len;
                 }
 
-                //EmSend4bit(encrypted_data ? mf_crypto1_encrypt4bit(pcs, CARD_NACK_NA) : CARD_NACK_NA);
-                //FpgaDisableTracing();
-
-                //Dbprintf("die here.");
-                //BigBuf_free_keep_EM();
-                //return;
                 continue;
-            }
+            //}
         }  // End Switch Loop
 
         button_pushed = BUTTON_PRESS();
     }  // End While Loop
 
-    Dbprintf("Loop beginning!");
-
     FpgaDisableTracing();
 
-    if (999 >= DBG_ERROR) {
+    if (g_dbglevel >= DBG_ERROR) {
         Dbprintf("Emulator stopped. Tracing: %d  trace length: %d ", get_tracing(), BigBuf_get_traceLen());
     }
-
-    //if ((flags & FLAG_INTERACTIVE) == FLAG_INTERACTIVE) {  // Interactive mode flag, means we need to send ACK
-    //    //Send the collected ar_nr in the response
-    //    reply_mix(CMD_ACK, CMD_HF_MIFARE_SIMULATE, button_pushed, 0, &ar_nr_resp, sizeof(ar_nr_resp));
-    //}
 
     FpgaWriteConfWord(FPGA_MAJOR_MODE_OFF);
     LEDsoff();
