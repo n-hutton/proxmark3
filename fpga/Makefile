@@ -45,7 +45,7 @@ XST_OPTS_AREA += -fsm_style bram
 XST_OPTS_AREA += -fsm_encoding compact
 
 # par specific option (set determistic seed)
-PAR_OPTIONS = -t 2
+PAR_OPTIONS = -t 1
 
 # Types of selective module compilation:
 # WITH_LF  Enables selection of LF modules (and disables all HF)
